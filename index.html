@@ -69,12 +69,37 @@
         header {
             background-color: var(--bg);
             border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
 
-        nav {
+        .header-container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .header-logo:hover {
+            color: var(--accent);
+        }
+
+        nav {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -95,9 +120,16 @@
         }
 
         @media (max-width: 640px) {
+            .header-container {
+                padding: 16px;
+            }
+
+            .header-logo {
+                font-size: 20px;
+            }
+
             nav {
                 gap: 24px;
-                padding: 16px;
             }
 
             nav a {
@@ -110,71 +142,37 @@
            ============================================ */
         .title-block {
             text-align: center;
-            padding: 100px 24px 80px;
+            padding: 48px 24px 20px;
         }
 
         .title-block h1 {
             font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
-            font-size: 72px;
+            font-size: 64px;
             font-weight: 600;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             line-height: 1.1;
         }
 
         .title-block .subtitle {
-            font-size: 18px;
+            font-size: 17px;
             color: var(--muted);
-            margin-bottom: 48px;
+            margin-bottom: 0;
             line-height: 1.5;
-        }
-
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 14px 32px;
-            background: transparent;
-            border: 1px solid var(--line);
-            color: var(--ink);
-            font-size: 15px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.25s ease;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
         }
 
         @media (max-width: 640px) {
             .title-block {
-                padding: 64px 16px 56px;
+                padding: 40px 16px 16px;
             }
 
             .title-block h1 {
-                font-size: 48px;
+                font-size: 40px;
             }
 
             .title-block .subtitle {
                 font-size: 16px;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn {
-                text-align: center;
             }
         }
 
@@ -188,7 +186,7 @@
             letter-spacing: 0.05em;
             color: var(--accent);
             text-align: center;
-            margin-bottom: 56px;
+            margin-bottom: 48px;
         }
 
         .section-eyebrow {
@@ -342,7 +340,7 @@
            SECTION: OBJECT SELECTION
            ============================================ */
         .objects-section {
-            padding: 80px 0;
+            padding: 40px 0;
         }
 
         .objects-grid {
@@ -357,6 +355,7 @@
             background: transparent;
             text-decoration: none;
             display: block;
+            position: relative;
         }
 
         .object-card-image {
@@ -364,8 +363,8 @@
             aspect-ratio: 4 / 5;
             overflow: hidden;
             border: 1px solid var(--line);
-            margin-bottom: 16px;
             background: var(--paper);
+            position: relative;
         }
 
         .object-card-image img {
@@ -376,26 +375,56 @@
         }
 
         .object-card:hover .object-card-image img {
-            transform: scale(1.03);
+            transform: scale(1.05);
+        }
+
+        .object-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, transparent 100%);
+            transition: all 0.3s ease;
         }
 
         .object-card-title {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 500;
-            color: var(--ink);
-            margin-bottom: 6px;
+            color: var(--paper);
+            margin-bottom: 0;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease;
         }
 
         .object-card-meta {
-            font-size: 14px;
-            color: var(--muted);
+            font-size: 13px;
+            color: rgba(255,255,255,0.85);
             margin-bottom: 8px;
+            margin-top: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
         .object-card-price {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
-            color: var(--ink);
+            color: var(--paper);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .object-card:hover .object-card-meta,
+        .object-card:hover .object-card-price {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .object-card:hover .object-card-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
         }
 
         @media (max-width: 900px) {
@@ -643,12 +672,14 @@
          HEADER NAVIGATION
          ============================================ -->
     <header>
-        <nav>
-            <a href="objets.html">Objets</a>
-            <a href="methode.html">Méthode</a>
-            <a href="journal.html">Journal</a>
-            <a href="contact.html">Contact</a>
-        </nav>
+        <div class="header-container">
+            <a href="index.html" class="header-logo">MARRAKEA</a>
+            <nav>
+                <a href="objets.html">Objets</a>
+                <a href="journal.html">Journal</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
     </header>
 
     <!-- ============================================
@@ -657,10 +688,6 @@
     <section class="title-block">
         <h1>MARRAKEA</h1>
         <p class="subtitle">Artisanat marocain. Sélectionné, documenté, transmis.</p>
-        <div class="cta-buttons">
-            <a href="objets.html" class="btn">Découvrir les objets</a>
-            <a href="methode.html" class="btn">Notre méthode</a>
-        </div>
     </section>
 
     <!-- ============================================
@@ -668,19 +695,19 @@
          ============================================ -->
     <section class="objects-section" id="objets">
         <div class="container">
-            <div class="section-eyebrow">Sélection</div>
-            <h2 class="section-title">Objets référencés</h2>
-
+            <h2 class="section-title">Objets sélectionnés</h2>
             <div class="objects-grid">
                 <!-- Object 1 -->
                 <a href="objet-detail.html" class="object-card">
                     <div class="object-card-image">
                         <img src="https://images.pexels.com/photos/11275299/pexels-photo-11275299.jpeg"
                              alt="Grand tapis Azilal">
+                        <div class="object-card-overlay">
+                            <h3 class="object-card-title">Grand tapis Azilal</h3>
+                            <p class="object-card-meta">Geste : Tissage • Haut Atlas</p>
+                            <p class="object-card-price">1 450 €</p>
+                        </div>
                     </div>
-                    <h3 class="object-card-title">Grand tapis Azilal</h3>
-                    <p class="object-card-meta">Geste : Tissage • Haut Atlas</p>
-                    <p class="object-card-price">1 450 €</p>
                 </a>
 
                 <!-- Object 2 -->
@@ -688,10 +715,12 @@
                     <div class="object-card-image">
                         <img src="https://images.pexels.com/photos/22823/pexels-photo.jpg"
                              alt="Plat creux Safi">
+                        <div class="object-card-overlay">
+                            <h3 class="object-card-title">Plat creux Safi</h3>
+                            <p class="object-card-meta">Geste : Tournage • Safi</p>
+                            <p class="object-card-price">85 €</p>
+                        </div>
                     </div>
-                    <h3 class="object-card-title">Plat creux Safi</h3>
-                    <p class="object-card-meta">Geste : Tournage • Safi</p>
-                    <p class="object-card-price">85 €</p>
                 </a>
 
                 <!-- Object 3 -->
@@ -699,10 +728,12 @@
                     <div class="object-card-image">
                         <img src="https://images.pexels.com/photos/7796162/pexels-photo-7796162.jpeg"
                              alt="Sac en cuir">
+                        <div class="object-card-overlay">
+                            <h3 class="object-card-title">Sac en cuir tanné</h3>
+                            <p class="object-card-meta">Geste : Tannage • Fès</p>
+                            <p class="object-card-price">390 €</p>
+                        </div>
                     </div>
-                    <h3 class="object-card-title">Sac en cuir tanné</h3>
-                    <p class="object-card-meta">Geste : Tannage • Fès</p>
-                    <p class="object-card-price">390 €</p>
                 </a>
 
                 <!-- Object 4 -->
@@ -710,10 +741,12 @@
                     <div class="object-card-image">
                         <img src="https://images.pexels.com/photos/13811675/pexels-photo-13811675.jpeg"
                              alt="Couverture Handira">
+                        <div class="object-card-overlay">
+                            <h3 class="object-card-title">Couverture Handira</h3>
+                            <p class="object-card-meta">Geste : Tissage • Moyen Atlas</p>
+                            <p class="object-card-price">580 €</p>
+                        </div>
                     </div>
-                    <h3 class="object-card-title">Couverture Handira</h3>
-                    <p class="object-card-meta">Geste : Tissage • Moyen Atlas</p>
-                    <p class="object-card-price">580 €</p>
                 </a>
 
                 <!-- Object 5 -->
@@ -721,10 +754,12 @@
                     <div class="object-card-image">
                         <img src="https://images.pexels.com/photos/3084334/pexels-photo-3084334.jpeg"
                              alt="Bol en céramique">
+                        <div class="object-card-overlay">
+                            <h3 class="object-card-title">Bol en céramique émaillée</h3>
+                            <p class="object-card-meta">Geste : Tournage • Safi</p>
+                            <p class="object-card-price">45 €</p>
+                        </div>
                     </div>
-                    <h3 class="object-card-title">Bol en céramique émaillée</h3>
-                    <p class="object-card-meta">Geste : Tournage • Safi</p>
-                    <p class="object-card-price">45 €</p>
                 </a>
 
                 <!-- Object 6 -->
@@ -732,10 +767,12 @@
                     <div class="object-card-image">
                         <img src="https://images.pexels.com/photos/17409449/pexels-photo-17409449.jpeg"
                              alt="Coussins berbères">
+                        <div class="object-card-overlay">
+                            <h3 class="object-card-title">Coussins tissés (lot de 2)</h3>
+                            <p class="object-card-meta">Geste : Tissage • Haut Atlas</p>
+                            <p class="object-card-price">180 €</p>
+                        </div>
                     </div>
-                    <h3 class="object-card-title">Coussins tissés (lot de 2)</h3>
-                    <p class="object-card-meta">Geste : Tissage • Haut Atlas</p>
-                    <p class="object-card-price">180 €</p>
                 </a>
             </div>
         </div>
