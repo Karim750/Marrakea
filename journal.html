@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal — MARRAKEA</title>
+    <meta name="description" content="Histoires, techniques et savoir-faire de l'artisanat marocain. Documentation factuelle et approche éditoriale.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg: #F3EFE8;
+            --ink: #2B2B2B;
+            --muted: #5E4B3A;
+            --accent: #B06A2A;
+            --line: #DED6C9;
+            --paper: #FFFFFF;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           HEADER NAVIGATION
+           ============================================ */
+        header {
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--line);
+        }
+
+        nav {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-size: 15px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           PAGE HEADER
+           ============================================ */
+        .page-hero {
+            text-align: center;
+            padding: 80px 24px 64px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .page-eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .page-hero h1 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 52px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+            margin-bottom: 24px;
+            line-height: 1.15;
+        }
+
+        .page-hero .intro {
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        /* ============================================
+           ARTICLES GRID
+           ============================================ */
+        .articles-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 64px 24px 80px;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 56px;
+        }
+
+        .article-card {
+            text-decoration: none;
+            display: block;
+        }
+
+        .article-image {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            margin-bottom: 24px;
+            background: var(--paper);
+        }
+
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .article-card:hover .article-image img {
+            transform: scale(1.03);
+        }
+
+        .article-meta {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .article-category {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .article-date {
+            color: var(--muted);
+        }
+
+        .article-title {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .article-excerpt {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        /* ============================================
+           FEATURED ARTICLE
+           ============================================ */
+        .featured-article {
+            margin-bottom: 80px;
+        }
+
+        .featured-article .article-image {
+            aspect-ratio: 21 / 9;
+            margin-bottom: 32px;
+        }
+
+        .featured-article .article-title {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .featured-article .article-excerpt {
+            font-size: 17px;
+            max-width: 700px;
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 900px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .featured-article .article-image {
+                aspect-ratio: 16 / 9;
+            }
+
+            .featured-article .article-title {
+                font-size: 32px;
+            }
+
+            .article-title {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                gap: 24px;
+                padding: 16px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            .page-hero {
+                padding: 56px 16px 48px;
+            }
+
+            .page-hero h1 {
+                font-size: 36px;
+            }
+
+            .articles-section {
+                padding: 48px 16px 64px;
+            }
+
+            .featured-article {
+                margin-bottom: 56px;
+            }
+
+            .featured-article .article-title {
+                font-size: 28px;
+            }
+
+            .article-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER NAVIGATION
+         ============================================ -->
+    <header>
+        <nav>
+            <a href="index.html">Accueil</a>
+            <a href="objets.html">Objets</a>
+            <a href="methode.html">Méthode</a>
+            <a href="journal.html">Journal</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <!-- ============================================
+         PAGE HERO
+         ============================================ -->
+    <section class="page-hero">
+        <div class="page-eyebrow">Documentation</div>
+        <h1>Journal</h1>
+        <p class="intro">
+            Histoires, techniques et savoir-faire de l'artisanat marocain.
+            Documentation factuelle et approche éditoriale.
+        </p>
+    </section>
+
+    <!-- ============================================
+         ARTICLES
+         ============================================ -->
+    <section class="articles-section">
+
+        <!-- Featured Article -->
+        <article class="article-card featured-article">
+            <a href="#" class="article-card">
+                <div class="article-image">
+                    <img src="https://images.pexels.com/photos/3581916/pexels-photo-3581916.jpeg"
+                         alt="Tissage Azilal">
+                </div>
+                <div class="article-meta">
+                    <span class="article-category">Technique</span>
+                    <span class="article-date">15 janvier 2025</span>
+                </div>
+                <h2 class="article-title">Le tissage Azilal : variations et mémoire</h2>
+                <p class="article-excerpt">
+                    Dans le Haut Atlas central, le tissage Azilal se transmet sans patron fixe. Chaque pièce porte la mémoire gestuelle de la tisserande. Nous avons documenté le processus sur plusieurs semaines dans trois ateliers distincts pour comprendre les variations structurelles de cette technique.
+                </p>
+            </a>
+        </article>
+
+        <!-- Articles Grid -->
+        <div class="articles-grid">
+
+            <!-- Article 1 -->
+            <article class="article-card">
+                <a href="#" class="article-card">
+                    <div class="article-image">
+                        <img src="https://images.pexels.com/photos/22823/pexels-photo.jpg"
+                             alt="Céramique Safi">
+                    </div>
+                    <div class="article-meta">
+                        <span class="article-category">Matière</span>
+                        <span class="article-date">08 janvier 2025</span>
+                    </div>
+                    <h2 class="article-title">L'argile de Safi : propriétés et contraintes</h2>
+                    <p class="article-excerpt">
+                        L'argile locale de Safi contient un taux de fer spécifique qui influence la couleur finale après cuisson. Analyse des propriétés physiques et chimiques de cette matière première.
+                    </p>
+                </a>
+            </article>
+
+            <!-- Article 2 -->
+            <article class="article-card">
+                <a href="#" class="article-card">
+                    <div class="article-image">
+                        <img src="https://images.pexels.com/photos/3084334/pexels-photo-3084334.jpeg"
+                             alt="Atelier potier">
+                    </div>
+                    <div class="article-meta">
+                        <span class="article-category">Atelier</span>
+                        <span class="article-date">28 décembre 2024</span>
+                    </div>
+                    <h2 class="article-title">Visite d'atelier : Mohamed El Haddad, potier</h2>
+                    <p class="article-excerpt">
+                        Depuis 1987, Mohamed El Haddad travaille l'argile locale selon des techniques transmises par son père. Documentation d'une journée de production dans son atelier de Safi.
+                    </p>
+                </a>
+            </article>
+
+            <!-- Article 3 -->
+            <article class="article-card">
+                <a href="#" class="article-card">
+                    <div class="article-image">
+                        <img src="https://images.pexels.com/photos/7796162/pexels-photo-7796162.jpeg"
+                             alt="Cuir tanné">
+                    </div>
+                    <div class="article-meta">
+                        <span class="article-category">Technique</span>
+                        <span class="article-date">18 décembre 2024</span>
+                    </div>
+                    <h2 class="article-title">Le tannage végétal : temps et transformation</h2>
+                    <p class="article-excerpt">
+                        Le tannage traditionnel à base de tanin nécessite plusieurs semaines. Nous avons mesuré les temps de chaque étape et documenté les variations de couleur selon les bains utilisés.
+                    </p>
+                </a>
+            </article>
+
+            <!-- Article 4 -->
+            <article class="article-card">
+                <a href="#" class="article-card">
+                    <div class="article-image">
+                        <img src="https://images.pexels.com/photos/13811675/pexels-photo-13811675.jpeg"
+                             alt="Handira">
+                    </div>
+                    <div class="article-meta">
+                        <span class="article-category">Histoire</span>
+                        <span class="article-date">05 décembre 2024</span>
+                    </div>
+                    <h2 class="article-title">La handira : fonction et évolution</h2>
+                    <p class="article-excerpt">
+                        Originellement portée lors des cérémonies de mariage, la handira a évolué vers un usage décoratif. Retour sur les transformations d'usage de ce textile berbère au fil des décennies.
+                    </p>
+                </a>
+            </article>
+
+            <!-- Article 5 -->
+            <article class="article-card">
+                <a href="#" class="article-card">
+                    <div class="article-image">
+                        <img src="https://images.pexels.com/photos/6054359/pexels-photo-6054359.jpeg"
+                             alt="Tour de potier">
+                    </div>
+                    <div class="article-meta">
+                        <span class="article-category">Geste</span>
+                        <span class="article-date">25 novembre 2024</span>
+                    </div>
+                    <h2 class="article-title">Le tournage : vitesse, pression, forme</h2>
+                    <p class="article-excerpt">
+                        Le geste du potier combine vitesse de rotation du tour, pression des mains et humidité de l'argile. Analyse biomécanique d'un geste technique complexe transmis par apprentissage direct.
+                    </p>
+                </a>
+            </article>
+
+            <!-- Article 6 -->
+            <article class="article-card">
+                <a href="#" class="article-card">
+                    <div class="article-image">
+                        <img src="https://images.pexels.com/photos/8969374/pexels-photo-8969374.jpeg"
+                             alt="Détail tissage">
+                    </div>
+                    <div class="article-meta">
+                        <span class="article-category">Matière</span>
+                        <span class="article-date">12 novembre 2024</span>
+                    </div>
+                    <h2 class="article-title">La laine du Moyen Atlas : qualités et traitement</h2>
+                    <p class="article-excerpt">
+                        La laine des moutons du Moyen Atlas présente des caractéristiques spécifiques liées à l'altitude et au climat. Documentation du processus de lavage, cardage et filage manuel.
+                    </p>
+                </a>
+            </article>
+
+        </div>
+
+    </section>
+
+</body>
+</html>
