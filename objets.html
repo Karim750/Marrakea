@@ -42,6 +42,10 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
+        body:not(.scrolled) {
+            padding-top: 61px;
+        }
+
         img {
             max-width: 100%;
             height: auto;
@@ -54,10 +58,16 @@
         header {
             background-color: var(--bg);
             border-bottom: 1px solid var(--line);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
+        }
+
+        header.hidden {
+            transform: translateY(-100%);
         }
 
         .header-container {
@@ -67,6 +77,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 32px;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-family: Inter, system-ui, sans-serif;
+            border: none;
+            border-bottom: 2px solid var(--line);
+            background: transparent;
+            color: var(--ink);
+            border-radius: 0;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--muted);
+            opacity: 0.6;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
+            background: transparent;
         }
 
         .header-logo {
@@ -104,85 +144,22 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 640px) {
-            .header-container {
-                padding: 16px;
-            }
-
-            .header-logo {
-                font-size: 20px;
-            }
-
-            nav {
-                gap: 24px;
-            }
-
-            nav a {
-                font-size: 14px;
-            }
-        }
-
         /* ============================================
            CATEGORY FILTERS
            ============================================ */
         .category-filters {
             background: var(--bg);
             border-bottom: 1px solid var(--line);
-            padding: 80px 0 40px;
+            padding: 32px 0 24px;
             position: sticky;
-            top: 60px;
-            z-index: 100;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: background-image 0.5s ease;
-        }
-
-        .category-filters::before {
-            content: '';
-            position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(243, 239, 232, 0.75);
-            z-index: 1;
-        }
-
-        .category-filters.bg-tous {
-            background-image: url('https://images.pexels.com/photos/11275299/pexels-photo-11275299.jpeg');
-        }
-
-        .category-filters.bg-tissage {
-            background-image: url('https://images.pexels.com/photos/3581916/pexels-photo-3581916.jpeg');
-        }
-
-        .category-filters.bg-tournage {
-            background-image: url('https://images.pexels.com/photos/22823/pexels-photo.jpg');
-        }
-
-        .category-filters.bg-dinanderie {
-            background-image: url('https://images.pexels.com/photos/6054359/pexels-photo-6054359.jpeg');
-        }
-
-        .category-filters.bg-tannage {
-            background-image: url('https://images.pexels.com/photos/7796162/pexels-photo-7796162.jpeg');
-        }
-
-        .category-filters.bg-menuiserie {
-            background-image: url('https://images.pexels.com/photos/1549200/pexels-photo-1549200.jpeg');
-        }
-
-        .category-filters.bg-vannerie {
-            background-image: url('https://images.pexels.com/photos/5691607/pexels-photo-5691607.jpeg');
+            z-index: 999;
         }
 
         .filters-container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 24px;
-            position: relative;
-            z-index: 2;
         }
 
         .filters-label {
@@ -304,6 +281,26 @@
            RESPONSIVE
            ============================================ */
         @media (max-width: 900px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .header-logo {
+                order: 1;
+            }
+
+            nav {
+                order: 2;
+                margin-left: auto;
+            }
+
+            .header-search {
+                order: 3;
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+
             .objects-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 24px;
@@ -311,17 +308,33 @@
         }
 
         @media (max-width: 640px) {
-            nav {
-                gap: 24px;
+            .header-container {
                 padding: 16px;
+            }
+
+            .header-logo {
+                font-size: 20px;
+            }
+
+            nav {
+                gap: 20px;
             }
 
             nav a {
                 font-size: 14px;
             }
 
+            .search-input {
+                font-size: 15px;
+                padding: 12px 16px;
+            }
+
             .category-filters {
-                padding: 60px 0 32px;
+                padding: 24px 0 20px;
+            }
+
+            body:not(.scrolled) {
+                padding-top: 56px;
             }
 
             .objects-section {
@@ -351,6 +364,14 @@
     <header>
         <div class="header-container">
             <a href="index.html" class="header-logo">MARRAKEA</a>
+            <div class="header-search">
+                <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="Rechercher un objet..."
+                >
+            </div>
             <nav>
                 <a href="objets.html">Objets</a>
                 <a href="journal.html">Journal</a>
@@ -362,7 +383,7 @@
     <!-- ============================================
          CATEGORY FILTERS
          ============================================ -->
-    <section class="category-filters bg-tous" id="categoryFilters">
+    <section class="category-filters">
         <div class="filters-container">
             <div class="filters-label">Par geste</div>
             <div class="filters-list">
@@ -459,8 +480,42 @@
         const filterButtons = document.querySelectorAll('.filter-btn');
         const objectCards = document.querySelectorAll('.object-card');
         const objectsCount = document.getElementById('objectsCount');
-        const categoryFilters = document.getElementById('categoryFilters');
+        const header = document.querySelector('header');
+        const searchInput = document.getElementById('searchInput');
+        let lastScrollTop = 0;
+        let currentCategory = 'tous';
+        let currentSearchTerm = '';
 
+        // Apply filters (category + search)
+        function applyFilters() {
+            let visibleCount = 0;
+
+            objectCards.forEach(card => {
+                const cardCategory = card.dataset.category;
+                const cardTitle = card.querySelector('.object-card-title').textContent.toLowerCase();
+                const cardMeta = card.querySelector('.object-card-meta').textContent.toLowerCase();
+                const searchText = `${cardTitle} ${cardMeta}`;
+
+                // Check category filter
+                const matchesCategory = currentCategory === 'tous' || cardCategory === currentCategory;
+
+                // Check search filter
+                const matchesSearch = currentSearchTerm === '' || searchText.includes(currentSearchTerm);
+
+                // Show/hide based on both filters
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update count
+            objectsCount.textContent = `${visibleCount} objet${visibleCount > 1 ? 's' : ''}`;
+        }
+
+        // Category filter functionality
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
                 // Update active state
@@ -468,25 +523,34 @@
                 button.classList.add('active');
 
                 // Get selected category
-                const selectedCategory = button.dataset.category;
+                currentCategory = button.dataset.category;
 
-                // Change background image
-                categoryFilters.className = 'category-filters bg-' + selectedCategory;
-
-                // Filter objects
-                let visibleCount = 0;
-                objectCards.forEach(card => {
-                    if (selectedCategory === 'tous' || card.dataset.category === selectedCategory) {
-                        card.style.display = 'block';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                // Update count
-                objectsCount.textContent = `${visibleCount} objet${visibleCount > 1 ? 's' : ''}`;
+                // Apply both filters
+                applyFilters();
             });
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value.toLowerCase().trim();
+            applyFilters();
+        });
+
+        // Scroll behavior for header
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > 100) {
+                // Scrolling down - hide header
+                header.classList.add('hidden');
+                document.body.classList.add('scrolled');
+            } else {
+                // At top - show header
+                header.classList.remove('hidden');
+                document.body.classList.remove('scrolled');
+            }
+
+            lastScrollTop = scrollTop;
         });
     </script>
 
