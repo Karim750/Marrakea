@@ -159,8 +159,11 @@
 
         .object-images {
             position: sticky;
-            top: 80px;
+            top: 90px;
             align-self: start;
+            max-height: calc(100vh - 110px);
+            display: flex;
+            flex-direction: column;
         }
 
         .object-info {
@@ -299,10 +302,10 @@
            ============================================ */
         .main-image {
             width: 100%;
-            aspect-ratio: 4 / 5;
+            aspect-ratio: 1 / 1;
             background: var(--paper);
             border: 1px solid var(--line);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             overflow: hidden;
         }
 
@@ -315,7 +318,7 @@
         .thumbnail-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 8px;
         }
 
         .thumbnail {
@@ -403,58 +406,6 @@
         .non-communique {
             font-style: italic;
             color: #999;
-        }
-
-        /* ============================================
-           VARIATIONS ET LIMITES (EMPHASIZED)
-           ============================================ */
-        .variations-limites {
-            background: var(--paper);
-            border: 2px solid var(--accent);
-            padding: 40px;
-            margin-bottom: 64px;
-        }
-
-        .variations-limites h2 {
-            color: var(--accent);
-            margin-bottom: 24px;
-        }
-
-        .variations-limites .text-content p {
-            font-size: 16px;
-            line-height: 1.75;
-            color: var(--ink);
-            margin-bottom: 16px;
-        }
-
-        .variations-limites .text-content p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* ============================================
-           NOTES MARRAKEA
-           ============================================ */
-        .notes-marrakea {
-            background: var(--paper);
-            border-left: 3px solid var(--accent);
-            padding: 36px;
-            margin-bottom: 64px;
-        }
-
-        .notes-marrakea h2 {
-            margin-bottom: 24px;
-        }
-
-        .notes-marrakea p {
-            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
-            font-size: 18px;
-            line-height: 1.8;
-            color: var(--ink);
-            margin-bottom: 16px;
-        }
-
-        .notes-marrakea p:last-child {
-            margin-bottom: 0;
         }
 
         /* ============================================
@@ -929,40 +880,6 @@
                 </div>
             </div>
 
-            <!-- B) VARIATIONS ET LIMITES (EMPHASIZED) -->
-            <div class="variations-limites">
-                <div class="section-eyebrow">Avertissement important</div>
-                <h2>Variations et limites</h2>
-                <div class="text-content">
-                    <p>Cette pièce est tissée sans patron strict. Les motifs géométriques sont tracés de mémoire par la tisserande et peuvent varier d'une pièce à l'autre.</p>
-                    <p>Les dimensions indiquées sont approximatives. Elles peuvent varier de ± 5 cm selon la tension du tissage et les conditions climatiques lors de la fabrication.</p>
-                    <p>La laine n'est pas teinte de manière uniforme. Chaque bain de teinture naturelle produit des nuances différentes. Ces variations ne sont pas des défauts, mais la trace du processus artisanal.</p>
-                    <p><strong>Marrakea ne garantit pas une reproduction à l'identique.</strong> Chaque pièce porte l'empreinte du geste de l'artisan et des matières utilisées.</p>
-                </div>
-            </div>
-
-            <!-- C) NOTES MARRAKEA -->
-            <div class="notes-marrakea">
-                <div class="section-eyebrow">Note curatoriale</div>
-                <h2>Notes Marrakea</h2>
-                <p>Ce type de tapis était traditionnellement réalisé pour un usage domestique dans les foyers berbères du Haut Atlas. Les motifs abstraits et géométriques ne suivent pas de règles fixes.</p>
-                <p>La qualité du tissage se mesure à la régularité de la trame et à la tension homogène du fil. Les irrégularités mineures sont normales et attestent du travail manuel.</p>
-                <p>Cette pièce a été référencée pour sa fidélité à la technique traditionnelle et la qualité de son exécution.</p>
-            </div>
-
-            <!-- D) ORIGINE, MATIÈRE, FABRICATION -->
-            <div class="info-section">
-                <div class="section-eyebrow">Contexte de production</div>
-                <h2>Origine, matière, fabrication</h2>
-                <div class="text-content">
-                    <p><strong>Matière première :</strong> La laine provient de moutons élevés dans la région du Haut Atlas. Elle est tondue une fois par an, au printemps, puis lavée et cardée manuellement.</p>
-                    <p><strong>Filage :</strong> Le filage est réalisé au fuseau à la main, ce qui produit un fil irrégulier et vivant. Cette étape peut prendre plusieurs semaines selon la quantité nécessaire.</p>
-                    <p><strong>Teinture :</strong> Les coloris sont obtenus par teinture naturelle (henné, safran, garance, indigo). Les bains de teinture varient selon la saison et la disponibilité des plantes.</p>
-                    <p><strong>Tissage :</strong> Le tissage s'effectue sur un métier vertical traditionnel. La tisserande travaille debout, sans patron fixe. Les motifs sont tracés de mémoire ou improvisés.</p>
-                    <p><strong>Finition :</strong> Une fois le tissage terminé, les fils de chaîne sont noués et égalisés aux ciseaux. Aucun traitement chimique n'est appliqué.</p>
-                </div>
-            </div>
-
             <!-- E) ATELIER & ARTISAN -->
             <div class="info-section">
                 <div class="section-eyebrow">Provenance</div>
@@ -1015,19 +932,6 @@
                     <p><strong>Motifs :</strong> Géométrie abstraite composée de losanges, triangles et lignes brisées. Palette dominante : blanc écru, noir, ocre, touches de rose et de vert.</p>
                     <p><strong>État :</strong> Pièce neuve, tissée récemment. Aucune restauration.</p>
                     <p><strong>Poids approximatif :</strong> 4 à 5 kg selon humidité ambiante.</p>
-                </div>
-            </div>
-
-            <!-- G) USAGE & ENTRETIEN -->
-            <div class="info-section">
-                <div class="section-eyebrow">Recommandations</div>
-                <h2>Usage et entretien</h2>
-                <div class="text-content">
-                    <p><strong>Usage recommandé :</strong> Sol à circulation modérée, tapis mural décoratif. Déconseillé pour zones à fort passage ou extérieur.</p>
-                    <p><strong>Entretien courant :</strong> Secouer à l'extérieur tous les 15 jours. Aspirer à basse puissance, sans battre. Éviter les brosses dures.</p>
-                    <p><strong>Taches :</strong> Nettoyer immédiatement à l'eau froide et savon neutre. Ne pas frotter, tamponner délicatement.</p>
-                    <p><strong>À éviter absolument :</strong> Lavage en machine, pressing, exposition prolongée au soleil direct, contact avec l'humidité permanente.</p>
-                    <p><strong>Conservation :</strong> Si stockage, rouler (ne pas plier) dans du tissu en coton naturel, à l'abri de la lumière et de l'humidité.</p>
                 </div>
             </div>
 
