@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand tapis Azilal — Dossier de référence — MARRAKEA</title>
+    <meta name="description" content="Dossier de référence : Grand tapis Azilal, tissage manuel, Haut Atlas. Documentation complète de la pièce.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg: #F3EFE8;
+            --ink: #2B2B2B;
+            --muted: #5E4B3A;
+            --accent: #B06A2A;
+            --line: #DED6C9;
+            --paper: #FFFFFF;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           HEADER NAVIGATION
+           ============================================ */
+        header {
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .header-logo:hover {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-size: 15px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .header-container {
+                padding: 16px;
+            }
+
+            .header-logo {
+                font-size: 20px;
+            }
+
+            nav {
+                gap: 24px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+        }
+
+        /* ============================================
+           BREADCRUMB
+           ============================================ */
+        .breadcrumb {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 24px 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+
+        /* ============================================
+           MAIN LAYOUT
+           ============================================ */
+        .object-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+        }
+
+        .object-images {
+            position: sticky;
+            top: 90px;
+            align-self: start;
+            max-height: calc(100vh - 110px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .object-info {
+            /* Flows naturally */
+        }
+
+        /* ============================================
+           OBJECT HEADER (TOP OF RIGHT COLUMN)
+           ============================================ */
+        .object-header {
+            margin-bottom: 56px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .object-header .object-eyebrow {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .object-header h1 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            color: var(--ink);
+        }
+
+        .object-intro {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .object-meta-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .meta-item {
+            color: var(--muted);
+        }
+
+        .meta-item strong {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .object-purchase-top {
+            padding-top: 28px;
+            border-top: 1px solid var(--line);
+        }
+
+        .price-line-top {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .price-suffix-top {
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        .actions-top {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-primary-top {
+            width: 100%;
+            padding: 16px 32px;
+            background: var(--ink);
+            border: 2px solid var(--ink);
+            color: var(--bg);
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .btn-primary-top:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .link-secondary-top {
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: underline;
+            text-align: center;
+            transition: color 0.2s ease;
+        }
+
+        .link-secondary-top:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 900px) {
+            .object-content {
+                grid-template-columns: 1fr;
+                gap: 48px;
+                padding: 32px 24px 80px;
+            }
+
+            .object-images {
+                position: static;
+            }
+
+            .object-header h1 {
+                font-size: 32px;
+            }
+
+            .object-meta-inline {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        /* ============================================
+           IMAGES
+           ============================================ */
+        .main-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .thumbnail {
+            aspect-ratio: 1 / 1;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .thumbnail:hover {
+            border-color: var(--accent);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ============================================
+           INFO SECTIONS
+           ============================================ */
+        .info-section {
+            margin-bottom: 64px;
+        }
+
+        .section-eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .info-section h2 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink);
+            margin-bottom: 28px;
+        }
+
+        /* ============================================
+           FICHE DE RÉFÉRENCE (TABLE)
+           ============================================ */
+        .reference-sheet {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 36px;
+        }
+
+        .reference-sheet table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .reference-sheet tr {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .reference-sheet tr:last-child {
+            border-bottom: none;
+        }
+
+        .reference-sheet td {
+            padding: 18px 0;
+            font-size: 15px;
+            vertical-align: top;
+        }
+
+        .reference-sheet td:first-child {
+            font-weight: 500;
+            color: var(--ink);
+            width: 42%;
+        }
+
+        .reference-sheet td:last-child {
+            color: var(--muted);
+        }
+
+        .non-communique {
+            font-style: italic;
+            color: #999;
+        }
+
+        /* ============================================
+           TEXT CONTENT
+           ============================================ */
+        .text-content p {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+
+        .text-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .text-content strong {
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        /* ============================================
+           ATELIER & ARTISAN BLOCK
+           ============================================ */
+        .artisan-block {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 36px;
+        }
+
+        .artisan-header {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .artisan-photo {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .artisan-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .artisan-identity {
+            flex: 1;
+        }
+
+        .artisan-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .artisan-role {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .artisan-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .artisan-details tr {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .artisan-details tr:last-child {
+            border-bottom: none;
+        }
+
+        .artisan-details td {
+            padding: 14px 0;
+            font-size: 14px;
+        }
+
+        .artisan-details td:first-child {
+            font-weight: 500;
+            color: var(--muted);
+            width: 140px;
+        }
+
+        .artisan-details td:last-child {
+            color: var(--ink);
+        }
+
+        /* ============================================
+           ACQUISITION SECTION
+           ============================================ */
+        .acquisition-section {
+            margin: 80px 0 64px;
+            padding: 56px 0;
+            border-top: 2px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .acquisition-section h2 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 22px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink);
+            margin-bottom: 32px;
+        }
+
+        .acquisition-price {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: 32px;
+            line-height: 1.3;
+        }
+
+        .acquisition-price-suffix {
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        .acquisition-context {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--ink);
+            margin-bottom: 36px;
+            max-width: 60ch;
+        }
+
+        .acquisition-button {
+            width: 100%;
+            max-width: 100%;
+            padding: 18px 32px;
+            background: var(--ink);
+            border: 2px solid var(--ink);
+            color: var(--bg);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .acquisition-button:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .acquisition-secondary {
+            display: inline-block;
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: underline;
+            margin-bottom: 32px;
+            transition: color 0.2s ease;
+        }
+
+        .acquisition-secondary:hover {
+            color: var(--accent);
+        }
+
+        .acquisition-footer {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--muted);
+            max-width: 60ch;
+        }
+
+        .acquisition-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            margin-bottom: 16px;
+            margin-top: 36px;
+        }
+
+        .acquisition-list {
+            list-style: none;
+            margin-bottom: 36px;
+            max-width: 60ch;
+        }
+
+        .acquisition-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .acquisition-list li:last-child {
+            border-bottom: none;
+        }
+
+        .acquisition-list-label {
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .acquisition-list-value {
+            color: var(--muted);
+        }
+
+        .acquisition-guarantee {
+            list-style: none;
+            margin-bottom: 36px;
+            max-width: 60ch;
+        }
+
+        .acquisition-guarantee li {
+            padding: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--ink);
+        }
+
+        .acquisition-guarantee li:before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        .acquisition-cta-note {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--muted);
+            margin-top: 12px;
+            margin-bottom: 24px;
+            max-width: 60ch;
+        }
+
+        /* ============================================
+           MÊME GESTE, AUTRES PIÈCES
+           ============================================ */
+        .related-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .related-eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .related-section h2 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink);
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .related-card {
+            text-decoration: none;
+            display: block;
+        }
+
+        .related-card-image {
+            aspect-ratio: 4 / 5;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .related-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .related-card:hover .related-card-image img {
+            transform: scale(1.05);
+        }
+
+        .related-card-meta {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .related-card-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .related-card-info {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 900px) {
+            .related-grid {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                gap: 24px;
+                padding: 16px;
+            }
+
+            .object-header h1 {
+                font-size: 28px;
+            }
+
+            .price-line-top {
+                font-size: 20px;
+            }
+
+            .artisan-header {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER NAVIGATION
+         ============================================ -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="header-logo">MARRAKEA</a>
+            <nav>
+                <a href="objets.html">Objets</a>
+                <a href="journal.html">Journal</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ============================================
+         BREADCRUMB
+         ============================================ -->
+    <div class="breadcrumb">
+        <a href="index.html">Accueil</a> / <a href="objets.html">Objets référencés</a> / <a href="objets.html">Tissage</a> / Grand tapis Azilal
+    </div>
+
+    <!-- ============================================
+         MAIN CONTENT
+         ============================================ -->
+    <div class="object-content">
+
+        <!-- LEFT: IMAGES -->
+        <div class="object-images">
+            <div class="main-image" id="mainImage">
+                <img src="https://images.pexels.com/photos/11275299/pexels-photo-11275299.jpeg"
+                     alt="Grand tapis Azilal - Vue principale">
+            </div>
+            <div class="thumbnail-grid">
+                <div class="thumbnail" onclick="changeImage(this)">
+                    <img src="https://images.pexels.com/photos/11275299/pexels-photo-11275299.jpeg"
+                         alt="Vue 1">
+                </div>
+                <div class="thumbnail" onclick="changeImage(this)">
+                    <img src="https://images.pexels.com/photos/8969374/pexels-photo-8969374.jpeg"
+                         alt="Vue 2 - Détail trame">
+                </div>
+                <div class="thumbnail" onclick="changeImage(this)">
+                    <img src="https://images.pexels.com/photos/3581916/pexels-photo-3581916.jpeg"
+                         alt="Vue 3 - Tissage">
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: INFO -->
+        <div class="object-info">
+
+            <!-- OBJECT HEADER -->
+            <div class="object-header">
+                <div class="object-eyebrow">Dossier de référence</div>
+                <h1>Grand tapis Azilal</h1>
+                <p class="object-intro">Tissage manuel à la laine vierge, réalisé dans le Haut Atlas selon des techniques transmises depuis plusieurs générations.</p>
+
+                <div class="object-meta-inline">
+                    <span class="meta-item"><strong>Geste :</strong> Tissage</span>
+                    <span class="meta-item"><strong>Territoire :</strong> Haut Atlas</span>
+                    <span class="meta-item"><strong>Référencé :</strong> Janvier 2025</span>
+                </div>
+
+                <div class="object-purchase-top">
+                    <div class="price-line-top">
+                        1 450 € <span class="price-suffix-top">— pièce unique — Disponible</span>
+                    </div>
+                    <div class="actions-top">
+                        <a href="#acquisition" class="btn-primary-top">Acheter cette pièce</a>
+                        <a href="contact.html" class="link-secondary-top">Poser une question</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A) FICHE DE RÉFÉRENCE -->
+            <div class="info-section">
+                <div class="section-eyebrow">Identification</div>
+                <h2>Fiche de référence</h2>
+                <div class="reference-sheet">
+                    <table>
+                        <tr>
+                            <td>Typologie</td>
+                            <td>Tapis tissé à usage domestique</td>
+                        </tr>
+                        <tr>
+                            <td>Appellation locale</td>
+                            <td>Tapis Azilal</td>
+                        </tr>
+                        <tr>
+                            <td>Région d'origine</td>
+                            <td>Haut Atlas central, Province d'Azilal</td>
+                        </tr>
+                        <tr>
+                            <td>Technique principale</td>
+                            <td>Tissage manuel sur métier vertical</td>
+                        </tr>
+                        <tr>
+                            <td>Matière première</td>
+                            <td>Laine vierge (ovins locaux)</td>
+                        </tr>
+                        <tr>
+                            <td>Dimensions observées</td>
+                            <td>240 × 160 cm (± 5 cm selon pièce)</td>
+                        </tr>
+                        <tr>
+                            <td>Temps de fabrication estimé</td>
+                            <td>120 à 160 heures de tissage effectif</td>
+                        </tr>
+                        <tr>
+                            <td>Statut de la pièce</td>
+                            <td>Pièce unique, référencée</td>
+                        </tr>
+                        <tr>
+                            <td>Date de référencement</td>
+                            <td>Janvier 2025</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- E) ATELIER & ARTISAN -->
+            <div class="info-section">
+                <div class="section-eyebrow">Provenance</div>
+                <h2>Atelier & artisan</h2>
+                <div class="artisan-block">
+                    <div class="artisan-header">
+                        <div class="artisan-photo">
+                            <img src="https://images.pexels.com/photos/3084334/pexels-photo-3084334.jpeg"
+                                 alt="Zineb Aït Boulli">
+                        </div>
+                        <div class="artisan-identity">
+                            <div class="artisan-name">Zineb Aït Boulli</div>
+                            <div class="artisan-role">Tisserande</div>
+                        </div>
+                    </div>
+                    <div class="artisan-details">
+                        <table>
+                            <tr>
+                                <td>Localisation atelier</td>
+                                <td>Haut Atlas central, Province d'Azilal</td>
+                            </tr>
+                            <tr>
+                                <td>Spécialité</td>
+                                <td>Tissage traditionnel Azilal</td>
+                            </tr>
+                            <tr>
+                                <td>Années d'expérience</td>
+                                <td>Non communiqué</td>
+                            </tr>
+                            <tr>
+                                <td>Mode de transmission</td>
+                                <td>Transmission familiale, apprentissage depuis l'enfance</td>
+                            </tr>
+                            <tr>
+                                <td>Équipement</td>
+                                <td>Métier vertical en bois, outils manuels traditionnels</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- F) DÉTAILS DE LA PIÈCE -->
+            <div class="info-section">
+                <div class="section-eyebrow">Observations</div>
+                <h2>Détails de la pièce</h2>
+                <div class="text-content">
+                    <p><strong>Structure :</strong> Chaîne en laine écrue non teinte, trame en laine teinte. Armure toile avec zones de tissage en tapisserie pour les motifs colorés.</p>
+                    <p><strong>Densité :</strong> Environ 8 à 12 fils de trame au centimètre. La densité peut varier légèrement selon les zones.</p>
+                    <p><strong>Motifs :</strong> Géométrie abstraite composée de losanges, triangles et lignes brisées. Palette dominante : blanc écru, noir, ocre, touches de rose et de vert.</p>
+                    <p><strong>État :</strong> Pièce neuve, tissée récemment. Aucune restauration.</p>
+                    <p><strong>Poids approximatif :</strong> 4 à 5 kg selon humidité ambiante.</p>
+                </div>
+            </div>
+
+            <!-- H) ACQUISITION -->
+            <div id="acquisition" class="acquisition-section">
+                <h2>Acquisition</h2>
+
+                <div class="acquisition-price">
+                    1 450 € <span class="acquisition-price-suffix">— pièce unique — Disponible</span>
+                </div>
+
+                <h3>Après l'achat</h3>
+                <ul class="acquisition-list">
+                    <li>
+                        <span class="acquisition-list-label">Contrôle final :</span>
+                        <span class="acquisition-list-value">Un contrôle final de conformité à la description est effectué avant expédition.</span>
+                    </li>
+                    <li>
+                        <span class="acquisition-list-label">Emballage :</span>
+                        <span class="acquisition-list-value">Emballage de protection adapté à la pièce.</span>
+                    </li>
+                    <li>
+                        <span class="acquisition-list-label">Expédition :</span>
+                        <span class="acquisition-list-value">Expédition avec suivi. Délais indiqués lors du passage de commande.</span>
+                    </li>
+                    <li>
+                        <span class="acquisition-list-label">Assurance :</span>
+                        <span class="acquisition-list-value">Envoi assuré selon la valeur déclarée.</span>
+                    </li>
+                    <li>
+                        <span class="acquisition-list-label">Retours :</span>
+                        <span class="acquisition-list-value">Conditions de retour précisées dans la politique de retour.</span>
+                    </li>
+                </ul>
+
+                <button class="acquisition-button">Acheter cette pièce</button>
+
+                <p class="acquisition-cta-note">
+                    Vous recevrez une confirmation de commande et les informations d'expédition.
+                </p>
+
+                <h3>Ce qui est garanti</h3>
+                <ul class="acquisition-guarantee">
+                    <li>Pièce unique : la pièce vendue est celle décrite sur cette page.</li>
+                    <li>Conformité : l'objet expédié correspond aux informations fournies (dimensions, matière déclarée, état).</li>
+                    <li>Informations fournies : matière, geste, atelier (lorsqu'ils sont connus) sont indiqués sur la fiche.</li>
+                </ul>
+
+                <a href="contact.html" class="acquisition-secondary">Poser une question avant d'acheter</a>
+
+                <p class="acquisition-footer">
+                    Cette pièce est vendue telle que décrite.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================
+         MÊME GESTE, AUTRES PIÈCES
+         ============================================ -->
+    <section class="related-section">
+        <div class="related-eyebrow">Même geste</div>
+        <h2>Autres pièces — Tissage</h2>
+        <div class="related-grid">
+
+            <a href="#" class="related-card">
+                <div class="related-card-image">
+                    <img src="https://images.pexels.com/photos/13811675/pexels-photo-13811675.jpeg"
+                         alt="Couverture Handira">
+                </div>
+                <p class="related-card-meta">Geste : Tissage • Haut Atlas</p>
+                <h3 class="related-card-title">Couverture Handira</h3>
+                <p class="related-card-info">Tissage traditionnel à sequins • Pièce unique</p>
+            </a>
+
+            <a href="#" class="related-card">
+                <div class="related-card-image">
+                    <img src="https://images.pexels.com/photos/8969374/pexels-photo-8969374.jpeg"
+                         alt="Tapis Beni Ouarain">
+                </div>
+                <p class="related-card-meta">Geste : Tissage • Moyen Atlas</p>
+                <h3 class="related-card-title">Tapis Beni Ouarain</h3>
+                <p class="related-card-info">Laine épaisse, motifs géométriques noirs • Référencé</p>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- ============================================
+         IMAGE GALLERY SCRIPT
+         ============================================ -->
+    <script>
+        function changeImage(thumbnail) {
+            const mainImage = document.getElementById('mainImage').querySelector('img');
+            const thumbnailImg = thumbnail.querySelector('img');
+            mainImage.src = thumbnailImg.src;
+            mainImage.alt = thumbnailImg.alt;
+        }
+    </script>
+
+</body>
+</html>

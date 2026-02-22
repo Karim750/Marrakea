@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objets référencés — MARRAKEA</title>
+    <meta name="description" content="Découvrez notre sélection d'objets artisanaux marocains référencés par geste.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg: #F3EFE8;
+            --ink: #2B2B2B;
+            --muted: #5E4B3A;
+            --accent: #B06A2A;
+            --line: #DED6C9;
+            --paper: #FFFFFF;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body:not(.scrolled) {
+            padding-top: 61px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           HEADER NAVIGATION
+           ============================================ */
+        header {
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--line);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-family: Inter, system-ui, sans-serif;
+            border: none;
+            border-bottom: 2px solid var(--line);
+            background: transparent;
+            color: var(--ink);
+            border-radius: 0;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--muted);
+            opacity: 0.6;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
+            background: transparent;
+        }
+
+        .header-logo {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .header-logo:hover {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-size: 15px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           CATEGORY FILTERS
+           ============================================ */
+        .category-filters {
+            background: var(--bg);
+            border-bottom: 1px solid var(--line);
+            padding: 32px 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .filters-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .filters-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .filters-list {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+        }
+
+        .filter-btn:hover {
+            color: var(--ink);
+            border-bottom-color: var(--line);
+        }
+
+        .filter-btn.active {
+            color: var(--ink);
+            border-bottom-color: var(--accent);
+        }
+
+        .filter-btn.active:hover {
+            border-bottom-color: var(--accent);
+        }
+
+        /* ============================================
+           OBJECTS GRID
+           ============================================ */
+        .objects-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 56px 24px 80px;
+        }
+
+        .objects-count {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .objects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .object-card {
+            background: transparent;
+            text-decoration: none;
+            display: block;
+        }
+
+        .object-card-image {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            margin-bottom: 16px;
+            background: var(--paper);
+        }
+
+        .object-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .object-card:hover .object-card-image img {
+            transform: scale(1.03);
+        }
+
+        .object-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+
+        .object-card-meta {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .object-card-price {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 900px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .header-logo {
+                order: 1;
+            }
+
+            nav {
+                order: 2;
+                margin-left: auto;
+            }
+
+            .header-search {
+                order: 3;
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+
+            .objects-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header-container {
+                padding: 16px;
+            }
+
+            .header-logo {
+                font-size: 20px;
+            }
+
+            nav {
+                gap: 20px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            .search-input {
+                font-size: 15px;
+                padding: 12px 16px;
+            }
+
+            .category-filters {
+                padding: 24px 0 20px;
+            }
+
+            body:not(.scrolled) {
+                padding-top: 56px;
+            }
+
+            .objects-section {
+                padding: 48px 16px 64px;
+            }
+
+            .objects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-list {
+                gap: 20px;
+            }
+
+            .filter-btn {
+                font-size: 13px;
+                padding: 6px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER NAVIGATION
+         ============================================ -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="header-logo">MARRAKEA</a>
+            <div class="header-search">
+                <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="Rechercher un objet..."
+                >
+            </div>
+            <nav>
+                <a href="objets.html">Objets</a>
+                <a href="journal.html">Journal</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ============================================
+         CATEGORY FILTERS
+         ============================================ -->
+    <section class="category-filters">
+        <div class="filters-container">
+            <div class="filters-label">Par geste</div>
+            <div class="filters-list">
+                <button class="filter-btn active" data-category="tous">Tous les objets</button>
+                <button class="filter-btn" data-category="tissage">Tissage</button>
+                <button class="filter-btn" data-category="tournage">Tournage</button>
+                <button class="filter-btn" data-category="dinanderie">Dinanderie</button>
+                <button class="filter-btn" data-category="tannage">Tannage</button>
+                <button class="filter-btn" data-category="menuiserie">Menuiserie</button>
+                <button class="filter-btn" data-category="vannerie">Vannerie</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         OBJECTS GRID
+         ============================================ -->
+    <section class="objects-section">
+        <div class="objects-count" id="objectsCount">6 objets</div>
+
+        <div class="objects-grid" id="objectsGrid">
+            <!-- Object 1 - Tissage -->
+            <a href="objet-detail.html" class="object-card" data-category="tissage">
+                <div class="object-card-image">
+                    <img src="https://images.pexels.com/photos/11275299/pexels-photo-11275299.jpeg"
+                         alt="Grand tapis Azilal">
+                </div>
+                <h3 class="object-card-title">Grand tapis Azilal</h3>
+                <p class="object-card-meta">Geste : Tissage • Haut Atlas</p>
+                <p class="object-card-price">1 450 €</p>
+            </a>
+
+            <!-- Object 2 - Tournage -->
+            <a href="#" class="object-card" data-category="tournage">
+                <div class="object-card-image">
+                    <img src="https://images.pexels.com/photos/22823/pexels-photo.jpg"
+                         alt="Plat creux Safi">
+                </div>
+                <h3 class="object-card-title">Plat creux Safi</h3>
+                <p class="object-card-meta">Geste : Tournage • Safi</p>
+                <p class="object-card-price">85 €</p>
+            </a>
+
+            <!-- Object 3 - Tannage -->
+            <a href="#" class="object-card" data-category="tannage">
+                <div class="object-card-image">
+                    <img src="https://images.pexels.com/photos/7796162/pexels-photo-7796162.jpeg"
+                         alt="Sac en cuir">
+                </div>
+                <h3 class="object-card-title">Sac en cuir tanné</h3>
+                <p class="object-card-meta">Geste : Tannage • Fès</p>
+                <p class="object-card-price">390 €</p>
+            </a>
+
+            <!-- Object 4 - Tissage -->
+            <a href="#" class="object-card" data-category="tissage">
+                <div class="object-card-image">
+                    <img src="https://images.pexels.com/photos/13811675/pexels-photo-13811675.jpeg"
+                         alt="Couverture Handira">
+                </div>
+                <h3 class="object-card-title">Couverture Handira</h3>
+                <p class="object-card-meta">Geste : Tissage • Moyen Atlas</p>
+                <p class="object-card-price">580 €</p>
+            </a>
+
+            <!-- Object 5 - Tournage -->
+            <a href="#" class="object-card" data-category="tournage">
+                <div class="object-card-image">
+                    <img src="https://images.pexels.com/photos/3084334/pexels-photo-3084334.jpeg"
+                         alt="Bol en céramique">
+                </div>
+                <h3 class="object-card-title">Bol en céramique émaillée</h3>
+                <p class="object-card-meta">Geste : Tournage • Safi</p>
+                <p class="object-card-price">45 €</p>
+            </a>
+
+            <!-- Object 6 - Tissage -->
+            <a href="#" class="object-card" data-category="tissage">
+                <div class="object-card-image">
+                    <img src="https://images.pexels.com/photos/17409449/pexels-photo-17409449.jpeg"
+                         alt="Coussins berbères">
+                </div>
+                <h3 class="object-card-title">Coussins tissés (lot de 2)</h3>
+                <p class="object-card-meta">Geste : Tissage • Haut Atlas</p>
+                <p class="object-card-price">180 €</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FILTER FUNCTIONALITY
+         ============================================ -->
+    <script>
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const objectCards = document.querySelectorAll('.object-card');
+        const objectsCount = document.getElementById('objectsCount');
+        const header = document.querySelector('header');
+        const searchInput = document.getElementById('searchInput');
+        let lastScrollTop = 0;
+        let currentCategory = 'tous';
+        let currentSearchTerm = '';
+
+        // Apply filters (category + search)
+        function applyFilters() {
+            let visibleCount = 0;
+
+            objectCards.forEach(card => {
+                const cardCategory = card.dataset.category;
+                const cardTitle = card.querySelector('.object-card-title').textContent.toLowerCase();
+                const cardMeta = card.querySelector('.object-card-meta').textContent.toLowerCase();
+                const searchText = `${cardTitle} ${cardMeta}`;
+
+                // Check category filter
+                const matchesCategory = currentCategory === 'tous' || cardCategory === currentCategory;
+
+                // Check search filter
+                const matchesSearch = currentSearchTerm === '' || searchText.includes(currentSearchTerm);
+
+                // Show/hide based on both filters
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update count
+            objectsCount.textContent = `${visibleCount} objet${visibleCount > 1 ? 's' : ''}`;
+        }
+
+        // Category filter functionality
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active state
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Get selected category
+                currentCategory = button.dataset.category;
+
+                // Apply both filters
+                applyFilters();
+            });
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value.toLowerCase().trim();
+            applyFilters();
+        });
+
+        // Scroll behavior for header
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > 100) {
+                // Scrolling down - hide header
+                header.classList.add('hidden');
+                document.body.classList.add('scrolled');
+            } else {
+                // At top - show header
+                header.classList.remove('hidden');
+                document.body.classList.remove('scrolled');
+            }
+
+            lastScrollTop = scrollTop;
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notre méthode de référence — MARRAKEA</title>
+    <meta name="description" content="Notre protocole de documentation pour l'artisanat marocain. Matière, atelier, geste et limites : transparence et rigueur.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg: #F3EFE8;
+            --ink: #2B2B2B;
+            --muted: #5E4B3A;
+            --accent: #B06A2A;
+            --line: #DED6C9;
+            --paper: #FFFFFF;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           HEADER NAVIGATION
+           ============================================ */
+        header {
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .header-logo:hover {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-size: 15px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .header-container {
+                padding: 16px;
+            }
+
+            .header-logo {
+                font-size: 20px;
+            }
+
+            nav {
+                gap: 24px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+        }
+
+        /* ============================================
+           PAGE HEADER
+           ============================================ */
+        .page-hero {
+            text-align: center;
+            padding: 80px 24px 64px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .page-hero h1 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 52px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+            margin-bottom: 24px;
+            line-height: 1.15;
+        }
+
+        .page-hero .intro {
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        /* ============================================
+           CONTENT SECTION
+           ============================================ */
+        .content-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .content-section.bg-paper {
+            background: var(--paper);
+        }
+
+        .section-title {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        /* ============================================
+           PRINCIPLES GRID
+           ============================================ */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .principle-card {
+            background: var(--bg);
+            border: 1px solid var(--line);
+            padding: 40px;
+        }
+
+        .principle-number {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .principle-card h3 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--ink);
+        }
+
+        .principle-card p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .principle-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ============================================
+           STATEMENT SECTION
+           ============================================ */
+        .statement-section {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .statement-section p {
+            font-size: 20px;
+            line-height: 1.8;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .statement-section strong {
+            font-weight: 600;
+        }
+
+        /* ============================================
+           PROCESS SECTION
+           ============================================ */
+        .process-list {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .process-item {
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .process-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .process-item h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .process-item p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            text-align: center;
+            padding: 80px 24px;
+            background: var(--paper);
+        }
+
+        .cta-section h2 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background: var(--ink);
+            border: 2px solid var(--ink);
+            color: var(--bg);
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .principles-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .page-hero h1 {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .statement-section p {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                gap: 24px;
+                padding: 16px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            .page-hero {
+                padding: 56px 16px 48px;
+            }
+
+            .page-hero h1 {
+                font-size: 32px;
+            }
+
+            .content-section {
+                padding: 56px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER NAVIGATION
+         ============================================ -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="header-logo">MARRAKEA</a>
+            <nav>
+                <a href="objets.html">Objets</a>
+                <a href="journal.html">Journal</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ============================================
+         PAGE HERO
+         ============================================ -->
+    <section class="page-hero">
+        <div class="page-eyebrow">Protocole</div>
+        <h1>Notre méthode de référence</h1>
+        <p class="intro">
+            Chaque objet référencé suit un protocole de documentation qui précise ce qui peut l'être.
+            Pas de storytelling, des faits vérifiables.
+        </p>
+    </section>
+
+    <!-- ============================================
+         PRINCIPLES SECTION
+         ============================================ -->
+    <section class="content-section bg-paper">
+        <h2 class="section-title">Quatre piliers</h2>
+
+        <div class="principles-grid">
+            <!-- Principle 1: Matière -->
+            <div class="principle-card">
+                <div class="principle-number">01</div>
+                <h3>Matière</h3>
+                <p>Composition, origine et propriétés décrites sur chaque fiche. Traçabilité annoncée quand connue.</p>
+                <p>Nous documentons la provenance des matières premières lorsque l'information est vérifiable. Lorsqu'elle ne l'est pas, nous l'indiquons.</p>
+            </div>
+
+            <!-- Principle 2: Atelier -->
+            <div class="principle-card">
+                <div class="principle-number">02</div>
+                <h3>Atelier</h3>
+                <p>Nom de l'artisan, localisation de l'atelier, spécialité. Identité vérifiable et documentée.</p>
+                <p>Chaque objet est lié à un atelier identifié. Nous visitons les ateliers et documentons les conditions de production.</p>
+            </div>
+
+            <!-- Principle 3: Geste -->
+            <div class="principle-card">
+                <div class="principle-number">03</div>
+                <h3>Geste</h3>
+                <p>Technique employée, temps estimé de fabrication, étapes clés du processus expliquées.</p>
+                <p>Nous décrivons le processus de fabrication sans romantisation. Les temps indiqués sont des estimations basées sur nos observations.</p>
+            </div>
+
+            <!-- Principle 4: Limites -->
+            <div class="principle-card">
+                <div class="principle-number">04</div>
+                <h3>Limites</h3>
+                <p>Variations naturelles, contraintes matérielles, ce qui ne peut être garanti. Transparence assumée.</p>
+                <p>Chaque fiche précise les variations attendues et les limites du processus artisanal. Nous ne garantissons pas l'uniformité.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         STATEMENT SECTION
+         ============================================ -->
+    <section class="statement-section">
+        <p>
+            Le marché de l'artisanat marocain est <strong>saturé</strong> de récits folkloriques
+            et de promesses <strong>floues</strong>.
+        </p>
+        <p>
+            Marrakea existe pour documenter, nommer et transmettre ce qui mérite de l'être.
+        </p>
+    </section>
+
+    <!-- ============================================
+         PROCESS SECTION
+         ============================================ -->
+    <section class="content-section">
+        <h2 class="section-title">Notre processus de référencement</h2>
+
+        <div class="process-list">
+            <div class="process-item">
+                <h3>1. Identification de l'atelier</h3>
+                <p>Nous visitons personnellement chaque atelier. Nous documentons sa localisation, son équipement et ses méthodes de travail.</p>
+            </div>
+
+            <div class="process-item">
+                <h3>2. Vérification des matières</h3>
+                <p>Nous traçons l'origine des matières premières lorsque c'est possible. Lorsque l'information n'est pas vérifiable, nous l'indiquons clairement.</p>
+            </div>
+
+            <div class="process-item">
+                <h3>3. Documentation du geste</h3>
+                <p>Nous observons et documentons le processus de fabrication. Nous photographions les étapes clés et mesurons les temps de production.</p>
+            </div>
+
+            <div class="process-item">
+                <h3>4. Identification des limites</h3>
+                <p>Nous testons les objets et documentons leurs variations naturelles. Nous précisons ce qui ne peut pas être garanti.</p>
+            </div>
+
+            <div class="process-item">
+                <h3>5. Rédaction de la fiche</h3>
+                <p>Chaque objet reçoit une fiche complète avec toutes les informations collectées. Pas de storytelling, uniquement des faits vérifiables.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         CTA SECTION
+         ============================================ -->
+    <section class="cta-section">
+        <h2>Découvrez nos objets référencés</h2>
+        <a href="objets.html" class="btn">Voir les objets</a>
+    </section>
+
+</body>
+</html>

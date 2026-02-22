@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — MARRAKEA</title>
+    <meta name="description" content="Contactez Marrakea pour toute question sur nos objets référencés ou notre méthode de documentation.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg: #F3EFE8;
+            --ink: #2B2B2B;
+            --muted: #5E4B3A;
+            --accent: #B06A2A;
+            --line: #DED6C9;
+            --paper: #FFFFFF;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================
+           HEADER NAVIGATION
+           ============================================ */
+        header {
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .header-logo:hover {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-size: 15px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .header-container {
+                padding: 16px;
+            }
+
+            .header-logo {
+                font-size: 20px;
+            }
+
+            nav {
+                gap: 24px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+        }
+
+        /* ============================================
+           PAGE HEADER
+           ============================================ */
+        .page-hero {
+            text-align: center;
+            padding: 80px 24px 48px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .page-eyebrow {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .page-hero h1 {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: 52px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+            margin-bottom: 24px;
+            line-height: 1.15;
+        }
+
+        .page-hero .intro {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        /* ============================================
+           CONTACT SECTION
+           ============================================ */
+        .contact-section {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 64px 24px 80px;
+        }
+
+        .contact-grid {
+            display: grid;
+            gap: 48px;
+            margin-bottom: 64px;
+        }
+
+        /* ============================================
+           CONTACT INFO
+           ============================================ */
+        .contact-info {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 32px;
+        }
+
+        .contact-info h2 {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: var(--ink);
+        }
+
+        .info-value a {
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .info-value a:hover {
+            color: var(--accent);
+        }
+
+        /* ============================================
+           CONTACT FORM
+           ============================================ */
+        .contact-form {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            padding: 40px;
+        }
+
+        .contact-form h2 {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--ink);
+            background: var(--paper);
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 16px 32px;
+            background: var(--ink);
+            border: 2px solid var(--ink);
+            color: var(--bg);
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-submit:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .form-note {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 640px) {
+            nav {
+                gap: 24px;
+                padding: 16px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            .page-hero {
+                padding: 56px 16px 40px;
+            }
+
+            .page-hero h1 {
+                font-size: 36px;
+            }
+
+            .contact-section {
+                padding: 48px 16px 64px;
+            }
+
+            .contact-form {
+                padding: 32px 24px;
+            }
+
+            .contact-info {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER NAVIGATION
+         ============================================ -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="header-logo">MARRAKEA</a>
+            <nav>
+                <a href="objets.html">Objets</a>
+                <a href="journal.html">Journal</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ============================================
+         PAGE HERO
+         ============================================ -->
+    <section class="page-hero">
+        <div class="page-eyebrow">Nous écrire</div>
+        <h1>Contact</h1>
+        <p class="intro">
+            Pour toute question sur nos objets référencés, notre méthode de documentation ou une demande spécifique.
+        </p>
+    </section>
+
+    <!-- ============================================
+         CONTACT SECTION
+         ============================================ -->
+    <section class="contact-section">
+
+        <div class="contact-grid">
+
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <h2>Informations</h2>
+
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">
+                        <a href="mailto:contact@marrakea.com">contact@marrakea.com</a>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Délai de réponse</div>
+                    <div class="info-value">48 à 72 heures ouvrées</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Horaires</div>
+                    <div class="info-value">Lundi — Vendredi<br>9h00 — 18h00 (GMT+1)</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form">
+            <h2>Formulaire de contact</h2>
+
+            <form action="#" method="post">
+
+                <div class="form-group">
+                    <label for="name">Nom complet *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Sujet *</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Sélectionnez un sujet</option>
+                        <option value="objet">Question sur un objet</option>
+                        <option value="commande">Commande / Acquisition</option>
+                        <option value="methode">Notre méthode</option>
+                        <option value="partenariat">Partenariat</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+
+                <button type="submit" class="form-submit">Envoyer le message</button>
+
+                <p class="form-note">
+                    Les champs marqués d'un astérisque (*) sont obligatoires. Vos données ne seront utilisées que pour répondre à votre demande.
+                </p>
+
+            </form>
+        </div>
+
+    </section>
+
+</body>
+</html>
