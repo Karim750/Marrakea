@@ -1,0 +1,491 @@
+openapi: 3.0.3
+info:
+  title: Marrakea - Medusa (Test Surface)
+  version: 1.0.0
+  description: |
+    Minimal Medusa v2 OpenAPI for Postman testing:
+    - Store: products, carts, checkout (payment sessions), customers, auth emailpass
+    - Admin: products create/read (minimal)
+
+servers:
+  - url: "{{MEDUSA_BASE_URL}}"
+    description: Medusa base URL (e.g. http://localhost:9000)
+
+tags:
+  - name: Medusa Store - Products
+  - name: Medusa Store - Carts
+  - name: Medusa Store - Checkout
+  - name: Medusa Store - Customers
+  - name: Medusa Store - Auth
+  - name: Medusa Admin - Products
+
+components:
+  securitySchemes:
+    PublishableKey:
+      type: apiKey
+      in: header
+      name: x-publishable-api-key
+    BearerJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    AdminBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message: { type: string }
+        type: { type: string }
+        code: { type: string, nullable: true }
+        stack: { type: string, nullable: true }
+
+    StoreProduct:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        handle: { type: string, nullable: true }
+        variants:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              title: { type: string }
+              inventory_quantity: { type: integer, nullable: true }
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+
+    StoreProductResponse:
+      type: object
+      properties:
+        product:
+          $ref: "#/components/schemas/StoreProduct"
+
+    StoreCart:
+      type: object
+      properties:
+        id: { type: string }
+        region_id: { type: string }
+        currency_code: { type: string, nullable: true }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              variant_id: { type: string }
+              quantity: { type: integer }
+        payment_collection:
+          type: object
+          nullable: true
+          additionalProperties: true
+
+    StoreCartResponse:
+      type: object
+      properties:
+        cart:
+          $ref: "#/components/schemas/StoreCart"
+
+    TokenResponse:
+      type: object
+      properties:
+        token: { type: string }
+
+    Customer:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string }
+        first_name: { type: string, nullable: true }
+        last_name: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+
+    CustomerResponse:
+      type: object
+      properties:
+        customer: { $ref: "#/components/schemas/Customer" }
+
+    AdminProductCreateRequest:
+      type: object
+      properties:
+        title: { type: string }
+        handle: { type: string }
+        status: { type: string, example: "published" }
+        options:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+        variants:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              inventory_quantity: { type: integer }
+              prices:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    currency_code: { type: string, example: "eur" }
+                    amount: { type: integer, example: 12000 }
+
+    AdminProductResponse:
+      type: object
+      properties:
+        product:
+          type: object
+          properties:
+            id: { type: string }
+            title: { type: string }
+            handle: { type: string, nullable: true }
+            status: { type: string, nullable: true }
+            variants:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: string }
+                  title: { type: string }
+
+paths:
+  /store/products:
+    get:
+      tags: [Medusa Store - Products]
+      summary: List products (Store)
+      security:
+        - PublishableKey: []
+      parameters:
+        - in: query
+          name: region_id
+          schema: { type: string }
+        - in: query
+          name: currency_code
+          schema: { type: string, example: "EUR" }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items: { $ref: "#/components/schemas/StoreProduct" }
+        "401":
+          description: Missing/invalid publishable key
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /store/products/{id}:
+    get:
+      tags: [Medusa Store - Products]
+      summary: Get product by ID (Store)
+      security:
+        - PublishableKey: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: region_id
+          schema: { type: string }
+        - in: query
+          name: currency_code
+          schema: { type: string, example: "EUR" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoreProductResponse" }
+
+  /store/carts:
+    post:
+      tags: [Medusa Store - Carts]
+      summary: Create cart
+      security:
+        - PublishableKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [region_id]
+              properties:
+                region_id: { type: string }
+            example:
+              region_id: "{{MEDUSA_REGION_ID}}"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoreCartResponse" }
+
+  /store/carts/{cart_id}/line-items:
+    post:
+      tags: [Medusa Store - Carts]
+      summary: Add line item to cart
+      security:
+        - PublishableKey: []
+      parameters:
+        - in: path
+          name: cart_id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [variant_id, quantity]
+              properties:
+                variant_id: { type: string }
+                quantity: { type: integer, minimum: 1 }
+            example:
+              variant_id: "{{DEFAULT_VARIANT_ID}}"
+              quantity: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoreCartResponse" }
+
+  /store/carts/{cart_id}/payment-sessions:
+    post:
+      tags: [Medusa Store - Checkout]
+      summary: Create payment sessions for cart
+      security:
+        - PublishableKey: []
+      parameters:
+        - in: path
+          name: cart_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoreCartResponse" }
+
+  /store/carts/{cart_id}/payment-session:
+    post:
+      tags: [Medusa Store - Checkout]
+      summary: Select payment provider for cart (e.g. stripe)
+      security:
+        - PublishableKey: []
+      parameters:
+        - in: path
+          name: cart_id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_id]
+              properties:
+                provider_id: { type: string }
+            example:
+              provider_id: "stripe"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoreCartResponse" }
+
+  /auth/customer/emailpass/register:
+    post:
+      tags: [Medusa Store - Auth]
+      summary: Get registration token (emailpass)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+            example:
+              email: "test1@marrakea.com"
+              password: "S3curePass123!"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+
+  /auth/customer/emailpass:
+    post:
+      tags: [Medusa Store - Auth]
+      summary: Authenticate customer (emailpass) -> JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+            example:
+              email: "test1@marrakea.com"
+              password: "S3curePass123!"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+
+  /store/customers:
+    post:
+      tags: [Medusa Store - Customers]
+      summary: Register customer using a JWT token (registration or login token)
+      security:
+        - PublishableKey: []
+        - BearerJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                first_name: { type: string }
+                last_name: { type: string }
+                phone: { type: string }
+            example:
+              email: "test1@marrakea.com"
+              password: "S3curePass123!"
+              first_name: "Amina"
+              last_name: "El Hadi"
+              phone: "+33601020304"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomerResponse" }
+
+  /store/customers/me:
+    get:
+      tags: [Medusa Store - Customers]
+      summary: Get authenticated customer profile
+      security:
+        - PublishableKey: []
+        - BearerJWT: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomerResponse" }
+
+  /admin/products:
+    get:
+      tags: [Medusa Admin - Products]
+      summary: List products (Admin)
+      security:
+        - AdminBearer: []
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string, description: "Search query" }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 50 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items: { $ref: "#/components/schemas/AdminProductResponse/properties/product" }
+    post:
+      tags: [Medusa Admin - Products]
+      summary: Create product (Admin)
+      security:
+        - AdminBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminProductCreateRequest" }
+            example:
+              title: "Vase en terre rouge"
+              handle: "vase-terre-rouge"
+              status: "published"
+              options:
+                - title: "Default"
+              variants:
+                - title: "Unique"
+                  inventory_quantity: 1
+                  prices:
+                    - currency_code: "eur"
+                      amount: 12000
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProductResponse" }
+
+  /admin/products/{id}:
+    get:
+      tags: [Medusa Admin - Products]
+      summary: Get product by ID (Admin)
+      security:
+        - AdminBearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProductResponse" }

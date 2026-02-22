@@ -1,0 +1,1401 @@
+openapi: 3.0.3
+info:
+  title: MARRAKEA BFF API
+  version: 1.0.0
+  description: |
+    BFF (Backend-for-Frontend) pour Marrakea.
+    - Strapi = éditorial (storytelling, images, artisans, blog)
+    - Medusa = transactionnel (prix, stock, checkout, comptes)
+    V1 pragmatique:
+    - Tri global par prix NON supporté (pagination pilotée par Strapi)
+servers:
+  - url: https://api.marrakea.com
+    description: Production
+  - url: http://localhost:4000
+    description: Local development
+
+tags:
+  - name: Health
+  - name: Catalog
+  - name: Blog
+  - name: Checkout
+  - name: Account
+  - name: Contact
+
+components:
+  securitySchemes:
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: marrakea.sid
+      description: Cookie httpOnly géré par le BFF (session côté serveur).
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+          example: Product not found
+        code:
+          type: string
+          example: PRODUCT_NOT_FOUND
+        details:
+          type: object
+          additionalProperties: true
+          nullable: true
+
+    Pagination:
+      type: object
+      required: [page, limit, total, totalPages]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          example: 12
+        total:
+          type: integer
+          minimum: 0
+          example: 48
+        totalPages:
+          type: integer
+          minimum: 0
+          example: 4
+
+    PaginatedResponse_ProductDTO:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductDTO"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    PaginatedResponse_ArticleDTO:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleDTO"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    MoneyDTO:
+      type: object
+      required: [amount, currency, formattedPrice]
+      properties:
+        amount:
+          type: number
+          format: float
+          example: 120.0
+        currency:
+          type: string
+          example: EUR
+        formattedPrice:
+          type: string
+          example: "120,00 €"
+
+    ImageDTO:
+      type: object
+      required: [url, alt, width, height]
+      properties:
+        url:
+          type: string
+          format: uri
+          example: https://cdn.marrakea.com/products/vase-001.webp
+        alt:
+          type: string
+          example: Vase en terre rouge
+        width:
+          type: integer
+          example: 800
+        height:
+          type: integer
+          example: 1000
+        blurDataUrl:
+          type: string
+          nullable: true
+          description: Optionnel — fourni uniquement si stocké côté Strapi.
+          example: "data:image/jpeg;base64,..."
+
+    GestureDTO:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+          example: gest_001
+        name:
+          type: string
+          example: Poterie
+        slug:
+          type: string
+          example: poterie
+
+    TerritoryDTO:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id:
+          type: string
+          example: terr_003
+        name:
+          type: string
+          example: Safi
+        slug:
+          type: string
+          example: safi
+
+    AvailabilityDTO:
+      type: object
+      required: [inStock, purchaseMode, label]
+      properties:
+        inStock:
+          type: boolean
+          example: true
+        purchaseMode:
+          type: string
+          enum: [unique, standard]
+          example: unique
+        label:
+          type: string
+          example: "Pièce unique"
+
+    ProductDTO:
+      type: object
+      required:
+        - id
+        - slug
+        - title
+        - intro
+        - coverImage
+        - price
+        - availability
+        - gesture
+        - territory
+        - defaultVariantId
+      properties:
+        id:
+          type: string
+          example: prod_001
+        slug:
+          type: string
+          example: vase-terre-rouge
+        title:
+          type: string
+          example: Vase en terre rouge
+        intro:
+          type: string
+          example: Vase artisanal façonné à la main...
+        coverImage:
+          $ref: "#/components/schemas/ImageDTO"
+        price:
+          $ref: "#/components/schemas/MoneyDTO"
+        availability:
+          $ref: "#/components/schemas/AvailabilityDTO"
+        gesture:
+          $ref: "#/components/schemas/GestureDTO"
+        territory:
+          $ref: "#/components/schemas/TerritoryDTO"
+        defaultVariantId:
+          type: string
+          description: Variant par défaut (résolu dans le catalog pour éviter le N+1 au checkout).
+          example: variant_123
+
+    ArtisanDTO:
+      type: object
+      required:
+        - id
+        - name
+        - bio
+        - portrait
+        - territory
+        - workshopLocation
+        - specialty
+        - yearsExperience
+        - transmissionMode
+        - equipment
+      properties:
+        id:
+          type: string
+          example: art_001
+        name:
+          type: string
+          example: Hassan El Fassi
+        bio:
+          type: string
+          example: Maître potier depuis 30 ans...
+        portrait:
+          $ref: "#/components/schemas/ImageDTO"
+        territory:
+          $ref: "#/components/schemas/TerritoryDTO"
+        workshopLocation:
+          type: string
+          example: Quartier des potiers, Safi
+        specialty:
+          type: string
+          example: Poterie traditionnelle
+        yearsExperience:
+          type: string
+          example: "30 ans"
+        transmissionMode:
+          type: string
+          example: Transmission familiale
+        equipment:
+          type: string
+          example: Tour de potier traditionnel
+
+    ProductDetailDTO:
+      type: object
+      required:
+        - id
+        - slug
+        - title
+        - intro
+        - coverImage
+        - images
+        - price
+        - availability
+        - description
+        - dimensions
+        - materials
+        - gesture
+        - territory
+        - acquisition
+        - referenceSheet
+        - defaultVariantId
+      properties:
+        id:
+          type: string
+          example: prod_001
+        slug:
+          type: string
+          example: vase-terre-rouge
+        title:
+          type: string
+          example: Vase en terre rouge
+        intro:
+          type: string
+          example: Vase artisanal façonné à la main...
+        coverImage:
+          $ref: "#/components/schemas/ImageDTO"
+        images:
+          type: array
+          description: Images secondaires uniquement (cover exclue).
+          items:
+            $ref: "#/components/schemas/ImageDTO"
+        price:
+          $ref: "#/components/schemas/MoneyDTO"
+        availability:
+          $ref: "#/components/schemas/AvailabilityDTO"
+        description:
+          type: string
+          description: HTML sanitizé côté BFF
+          example: "<p>Ce vase en terre rouge est façonné à la main...</p>"
+        dimensions:
+          type: string
+          nullable: true
+          example: "H 35cm × Ø 18cm"
+        materials:
+          type: array
+          items:
+            type: string
+          example: ["Terre rouge de Safi", "Engobe naturel"]
+        gesture:
+          $ref: "#/components/schemas/GestureDTO"
+        territory:
+          $ref: "#/components/schemas/TerritoryDTO"
+        artisan:
+          $ref: "#/components/schemas/ArtisanDTO"
+          nullable: true
+        acquisition:
+          type: string
+          nullable: true
+          example: "Pièce unique. Expédition sous 3–5 jours ouvrés."
+        referenceSheet:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            Hauteur: "35 cm"
+            Diamètre: "18 cm"
+            Poids: "1,2 kg"
+            Matière: "Terre rouge"
+            Origine: "Safi, Maroc"
+        defaultVariantId:
+          type: string
+          example: variant_123
+
+    ArticleAuthorDTO:
+      type: object
+      required: [name, avatar]
+      properties:
+        name:
+          type: string
+          example: Sarah Bennani
+        avatar:
+          $ref: "#/components/schemas/ImageDTO"
+
+    ArticleDTO:
+      type: object
+      required: [id, slug, title, excerpt, coverImage, publishedAt, category, author]
+      properties:
+        id:
+          type: string
+          example: art_001
+        slug:
+          type: string
+          example: poterie-safi-heritage
+        title:
+          type: string
+          example: La poterie de Safi, un héritage ancestral
+        excerpt:
+          type: string
+          example: Découvrez l'histoire fascinante de la poterie de Safi...
+        coverImage:
+          $ref: "#/components/schemas/ImageDTO"
+        publishedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:00:00Z"
+        category:
+          type: string
+          example: Savoir-faire
+        author:
+          $ref: "#/components/schemas/ArticleAuthorDTO"
+
+    ArticleDetailDTO:
+      type: object
+      required:
+        - id
+        - slug
+        - title
+        - excerpt
+        - coverImage
+        - publishedAt
+        - category
+        - author
+        - content
+        - images
+      properties:
+        id:
+          type: string
+          example: art_001
+        slug:
+          type: string
+          example: poterie-safi-heritage
+        title:
+          type: string
+          example: La poterie de Safi, un héritage ancestral
+        excerpt:
+          type: string
+          example: Découvrez l'histoire fascinante de la poterie de Safi...
+        coverImage:
+          $ref: "#/components/schemas/ImageDTO"
+        publishedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:00:00Z"
+        category:
+          type: string
+          example: Savoir-faire
+        author:
+          $ref: "#/components/schemas/ArticleAuthorDTO"
+        content:
+          type: string
+          description: HTML sanitizé côté BFF
+          example: "<article><p>La poterie de Safi est un art...</p></article>"
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImageDTO"
+        relatedProducts:
+          type: array
+          description: Optionnel — max 3-4 recommandé
+          items:
+            $ref: "#/components/schemas/ProductDTO"
+          nullable: true
+
+    StockDTO:
+      type: object
+      required: [inStock]
+      properties:
+        inStock:
+          type: boolean
+          example: true
+
+    CheckoutItemDTO:
+      type: object
+      required: [variantId, quantity]
+      properties:
+        variantId:
+          type: string
+          example: variant_123
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+
+    CheckoutSessionDTO:
+      type: object
+      required: [cartId, paymentProvider, clientSecret]
+      properties:
+        cartId:
+          type: string
+          example: cart_abc123
+        paymentProvider:
+          type: string
+          example: stripe
+        clientSecret:
+          type: string
+          example: "pi_..._secret_..."
+
+    CheckoutStatusDTO:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [DRAFT, LOCKED, PAID, CANCELLED, EXPIRED, FAILED]
+          example: PAID
+        orderId:
+          type: string
+          nullable: true
+          example: order_abc123
+
+    CheckoutCompleteDTO:
+      type: object
+      required: [orderId]
+      properties:
+        orderId:
+          type: string
+          example: order_abc123
+
+    CustomerDTO:
+      type: object
+      required: [id, email, firstName, lastName, phone, hasAccount, createdAt]
+      properties:
+        id:
+          type: string
+          example: cus_123
+        email:
+          type: string
+          format: email
+          example: client@example.com
+        firstName:
+          type: string
+          example: Amina
+        lastName:
+          type: string
+          example: El Hadi
+        phone:
+          type: string
+          nullable: true
+          example: "+33601020304"
+        hasAccount:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-01-24T10:00:00.000Z"
+
+    RegisterRequest:
+      type: object
+      required: [email, password, firstName, lastName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+          nullable: true
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    LogoutResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          example: true
+
+    AddressDTO:
+      type: object
+      required:
+        - id
+        - label
+        - firstName
+        - lastName
+        - address1
+        - city
+        - postalCode
+        - countryCode
+      properties:
+        id:
+          type: string
+          example: addr_123
+        label:
+          type: string
+          example: Domicile
+        firstName:
+          type: string
+          example: Amina
+        lastName:
+          type: string
+          example: El Hadi
+        address1:
+          type: string
+          example: 12 rue ...
+        address2:
+          type: string
+          nullable: true
+        city:
+          type: string
+          example: Paris
+        postalCode:
+          type: string
+          example: "75011"
+        countryCode:
+          type: string
+          example: FR
+        phone:
+          type: string
+          nullable: true
+
+    AddressCreateRequest:
+      type: object
+      required: [label, firstName, lastName, address1, city, postalCode, countryCode]
+      properties:
+        label:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+          nullable: true
+        city:
+          type: string
+        postalCode:
+          type: string
+        countryCode:
+          type: string
+        phone:
+          type: string
+          nullable: true
+
+    AddressUpdateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+          nullable: true
+        city:
+          type: string
+        postalCode:
+          type: string
+        countryCode:
+          type: string
+        phone:
+          type: string
+          nullable: true
+
+    OrderSummaryDTO:
+      type: object
+      required: [id, createdAt, status, total]
+      properties:
+        id:
+          type: string
+          example: order_abc123
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-01-24T10:00:00.000Z"
+        status:
+          type: string
+          example: completed
+        total:
+          $ref: "#/components/schemas/MoneyDTO"
+
+    OrderDetailDTO:
+      type: object
+      required: [id, createdAt, status, total]
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        total:
+          $ref: "#/components/schemas/MoneyDTO"
+        raw:
+          type: object
+          description: Optionnel — éviter d’exposer la forme brute en prod. Ici placeholder.
+          additionalProperties: true
+
+    PaginatedResponse_OrderSummaryDTO:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderSummaryDTO"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    PasswordResetRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    PasswordResetConfirmRequest:
+      type: object
+      required: [token, password]
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          minLength: 8
+
+    ContactFormDTO:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        subject:
+          type: string
+        message:
+          type: string
+          minLength: 10
+
+    ContactResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Message envoyé avec succès
+
+    HealthDTO:
+      type: object
+      required: [status, version, timestamp, services]
+      properties:
+        status:
+          type: string
+          example: healthy
+        version:
+          type: string
+          example: 1.0.0
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-24T12:00:00Z"
+        services:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            strapi: up
+            medusa: up
+            stripe: up
+            database: up
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthDTO"
+
+  /catalog/products:
+    get:
+      tags: [Catalog]
+      summary: List products (paginated)
+      description: |
+        V1: tri supportés: newest, name_asc.
+        Tri par prix global NON supporté.
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, default: 12 }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: gesture
+          schema: { type: string }
+        - in: query
+          name: territory
+          schema: { type: string }
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [newest, name_asc, price_asc, price_desc]
+            default: newest
+      responses:
+        "200":
+          description: Paginated products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse_ProductDTO"
+        "400":
+          description: Bad Request (e.g., unsupported sort)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unsupportedSort:
+                  value:
+                    error: "Unsupported sort in v1"
+                    code: "UNSUPPORTED_SORT"
+                    details:
+                      allowed: ["newest", "name_asc"]
+
+  /catalog/products/featured:
+    get:
+      tags: [Catalog]
+      summary: Get featured products
+      responses:
+        "200":
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductDTO"
+
+  /catalog/products/{slug}:
+    get:
+      tags: [Catalog]
+      summary: Get product detail by slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetailDTO"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                productNotFound:
+                  value:
+                    error: Product not found
+                    code: PRODUCT_NOT_FOUND
+
+  /catalog/products/{productId}/stock:
+    get:
+      tags: [Catalog]
+      summary: Real-time stock check (no-store)
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Stock status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockDTO"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /catalog/gestures:
+    get:
+      tags: [Catalog]
+      summary: List gestures (categories)
+      responses:
+        "200":
+          description: Gestures list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GestureDTO"
+
+  /catalog/territories:
+    get:
+      tags: [Catalog]
+      summary: List territories
+      responses:
+        "200":
+          description: Territories list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TerritoryDTO"
+
+  /blog/articles:
+    get:
+      tags: [Blog]
+      summary: List blog articles (paginated)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, default: 10 }
+        - in: query
+          name: category
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated articles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse_ArticleDTO"
+
+  /blog/articles/{slug}:
+    get:
+      tags: [Blog]
+      summary: Get article detail by slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Article detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleDetailDTO"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /checkout/session:
+    post:
+      tags: [Checkout]
+      summary: Create checkout session (Medusa-native)
+      description: |
+        V1: le frontend envoie directement des variantId (pour éviter N+1).
+        Retourne cartId + clientSecret Stripe (Payment Element).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/CheckoutItemDTO"
+            example:
+              - variantId: variant_123
+                quantity: 1
+      responses:
+        "201":
+          description: Created checkout session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutSessionDTO"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Out of stock
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /checkout/status:
+    get:
+      tags: [Checkout]
+      summary: Get checkout status
+      parameters:
+        - in: query
+          name: cart_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Checkout status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutStatusDTO"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /checkout/complete:
+    post:
+      tags: [Checkout]
+      summary: Complete cart (finalize order)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cartId]
+              properties:
+                cartId:
+                  type: string
+                  example: cart_abc123
+      responses:
+        "200":
+          description: Completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutCompleteDTO"
+        "409":
+          description: Conflict (not ready / payment not authorized)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/register:
+    post:
+      tags: [Account]
+      summary: Register customer (JWT option 1)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Registered (session cookie set)
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Sets marrakea.sid httpOnly cookie.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerDTO"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/login:
+    post:
+      tags: [Account]
+      summary: Login customer (JWT option 1)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Logged in (session cookie set)
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Sets marrakea.sid httpOnly cookie.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerDTO"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/logout:
+    post:
+      tags: [Account]
+      summary: Logout customer
+      security:
+        - SessionCookie: []
+      responses:
+        "200":
+          description: Logged out (cookie cleared)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/me:
+    get:
+      tags: [Account]
+      summary: Get current customer profile
+      security:
+        - SessionCookie: []
+      responses:
+        "200":
+          description: Customer profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerDTO"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/addresses:
+    get:
+      tags: [Account]
+      summary: List addresses
+      security:
+        - SessionCookie: []
+      responses:
+        "200":
+          description: Addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AddressDTO"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags: [Account]
+      summary: Add address
+      security:
+        - SessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressCreateRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddressDTO"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/addresses/{addressId}:
+    patch:
+      tags: [Account]
+      summary: Update address
+      security:
+        - SessionCookie: []
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressUpdateRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddressDTO"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Address not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags: [Account]
+      summary: Delete address
+      security:
+        - SessionCookie: []
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Address not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/orders:
+    get:
+      tags: [Account]
+      summary: List my orders (paginated)
+      security:
+        - SessionCookie: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, default: 10 }
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse_OrderSummaryDTO"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/orders/{orderId}:
+    get:
+      tags: [Account]
+      summary: Get order detail
+      security:
+        - SessionCookie: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderDetailDTO"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/password/reset/request:
+    post:
+      tags: [Account]
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetRequest"
+      responses:
+        "200":
+          description: Requested
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success]
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        "429":
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /account/password/reset/confirm:
+    post:
+      tags: [Account]
+      summary: Confirm password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetConfirmRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success]
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        "400":
+          description: Invalid token or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /contact:
+    post:
+      tags: [Contact]
+      summary: Submit contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactFormDTO"
+      responses:
+        "200":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"

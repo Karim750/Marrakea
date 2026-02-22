@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "artisans",
+  "info": {
+    "singularName": "artisan",
+    "pluralName": "artisans",
+    "displayName": "Artisan",
+    "description": "Artisan profile with bio and workshop info"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "bio": {
+      "type": "text"
+    },
+    "workshopLocation": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "yearsExperience": {
+      "type": "integer"
+    },
+    "transmissionMode": {
+      "type": "string"
+    },
+    "equipment": {
+      "type": "text"
+    },
+    "territory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::territory.territory"
+    },
+    "portrait": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "territories",
+  "info": {
+    "singularName": "territory",
+    "pluralName": "territories",
+    "displayName": "Territory",
+    "description": "Geographic territory where artisans operate"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    }
+  }
+}

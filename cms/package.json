@@ -1,0 +1,33 @@
+{
+  "name": "marrakea-cms",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Marrakea CMS powered by Strapi",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi",
+    "seed": "tsx scripts/seed-strapi.ts"
+  },
+  "dependencies": {
+    "@strapi/plugin-cloud": "^5.33.4",
+    "@strapi/plugin-users-permissions": "^5.33.4",
+    "@strapi/strapi": "^5.33.4",
+    "better-sqlite3": "^11.6.0",
+    "pg": "^8.13.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=22.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "tsx": "^4.21.0"
+  }
+}

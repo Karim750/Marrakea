@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Git",
+      "Node",
+      "Npm",
+      "Pnpm",
+      "Npx",
+      "Next",
+      "Tsc",
+      "Eslint"
+    ],
+    "deny": [
+      "Rm -rf",
+      "Sudo",
+      "Curl | bash"
+    ]
+  }
+}

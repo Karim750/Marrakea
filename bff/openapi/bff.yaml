@@ -1,0 +1,910 @@
+openapi: 3.0.3
+info:
+  title: MARRAKEA BFF API
+  description: |
+    Backend-For-Frontend API for the Marrakea Next.js frontend.
+    Aggregates Strapi (editorial) and Medusa (commerce) data into strict DTOs.
+  version: 1.0.0
+  contact:
+    name: Marrakea Team
+
+servers:
+  - url: https://api.marrakea.com
+    description: Production
+  - url: http://localhost:4000
+    description: Development
+
+tags:
+  - name: Catalog
+    description: Product catalog, gestures, and territories
+  - name: Blog
+    description: Articles and editorial content
+  - name: Checkout
+    description: Shopping cart and payment
+  - name: Account
+    description: Customer authentication and profile
+  - name: Contact
+    description: Contact form
+  - name: Health
+    description: Service health check
+
+paths:
+  /catalog/products:
+    get:
+      tags: [Catalog]
+      summary: List paginated products
+      operationId: listProducts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 12
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search in title/intro
+        - name: gesture
+          in: query
+          schema:
+            type: string
+          description: Filter by gesture slug
+        - name: territory
+          in: query
+          schema:
+            type: string
+          description: Filter by territory slug
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, name_asc, price_asc, price_desc]
+          description: Sort order (price_asc/price_desc return 400 in v1)
+      responses:
+        '200':
+          description: Paginated list of products
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=60, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductResponse'
+        '400':
+          description: Unsupported sort parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /catalog/products/featured:
+    get:
+      tags: [Catalog]
+      summary: Get featured products (max 6)
+      operationId: getFeaturedProducts
+      responses:
+        '200':
+          description: List of featured products
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=300, stale-while-revalidate=600"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDTO'
+                maxItems: 6
+
+  /catalog/products/{slug}:
+    get:
+      tags: [Catalog]
+      summary: Get product detail by slug
+      operationId: getProductBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product detail
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=60, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailDTO'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /catalog/products/{productId}/stock:
+    get:
+      tags: [Catalog]
+      summary: Get realtime stock status
+      operationId: getProductStock
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stock status
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inStock:
+                    type: boolean
+                required:
+                  - inStock
+
+  /catalog/gestures:
+    get:
+      tags: [Catalog]
+      summary: List all gestures
+      operationId: listGestures
+      responses:
+        '200':
+          description: List of gestures
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=3600, stale-while-revalidate=86400"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GestureDTO'
+
+  /catalog/territories:
+    get:
+      tags: [Catalog]
+      summary: List all territories
+      operationId: listTerritories
+      responses:
+        '200':
+          description: List of territories
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=3600, stale-while-revalidate=86400"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TerritoryDTO'
+
+  /blog/articles:
+    get:
+      tags: [Blog]
+      summary: List paginated articles
+      operationId: listArticles
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category (exact match)
+      responses:
+        '200':
+          description: Paginated list of articles
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=120, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedArticleResponse'
+
+  /blog/articles/{slug}:
+    get:
+      tags: [Blog]
+      summary: Get article detail by slug
+      operationId: getArticleBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Article detail with related products
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=120, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetailDTO'
+        '404':
+          description: Article not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /checkout/session:
+    post:
+      tags: [Checkout]
+      summary: Create checkout session
+      operationId: createCheckoutSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CheckoutPayloadItem'
+      responses:
+        '200':
+          description: Checkout session created
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutSessionDTO'
+        '400':
+          description: Invalid quantity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Out of stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Payment provider error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /checkout/status:
+    get:
+      tags: [Checkout]
+      summary: Get checkout status
+      operationId: getCheckoutStatus
+      parameters:
+        - name: cart_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Checkout status
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutStatusDTO'
+
+  /account/register:
+    post:
+      tags: [Account]
+      summary: Register new customer
+      operationId: registerCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPayload'
+      responses:
+        '200':
+          description: Customer registered
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+
+  /account/login:
+    post:
+      tags: [Account]
+      summary: Login customer
+      operationId: loginCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginPayload'
+      responses:
+        '200':
+          description: Customer logged in (session cookie set)
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /account/me:
+    get:
+      tags: [Account]
+      summary: Get current customer
+      operationId: getCurrentCustomer
+      responses:
+        '200':
+          description: Current customer
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /account/logout:
+    post:
+      tags: [Account]
+      summary: Logout customer
+      operationId: logoutCustomer
+      responses:
+        '200':
+          description: Logged out
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                required:
+                  - success
+
+  /contact:
+    post:
+      tags: [Contact]
+      summary: Submit contact form
+      operationId: submitContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactPayload'
+      responses:
+        '200':
+          description: Message sent
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                required:
+                  - success
+                  - message
+        '400':
+          description: Invalid email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service health status
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-store"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  version:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  services:
+                    type: object
+                    properties:
+                      strapi:
+                        type: string
+                        enum: [up, down]
+                      medusa:
+                        type: string
+                        enum: [up, down]
+                required:
+                  - status
+                  - version
+                  - timestamp
+                  - services
+
+components:
+  schemas:
+    ImageDTO:
+      type: object
+      properties:
+        url:
+          type: string
+        alt:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        blurDataUrl:
+          type: string
+      required:
+        - url
+        - alt
+
+    MoneyDTO:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+          enum: [EUR]
+        formattedPrice:
+          type: string
+      required:
+        - amount
+        - currency
+        - formattedPrice
+
+    AvailabilityDTO:
+      type: object
+      properties:
+        inStock:
+          type: boolean
+        purchaseMode:
+          type: string
+          enum: [unique, standard]
+        label:
+          type: string
+      required:
+        - inStock
+        - purchaseMode
+        - label
+
+    GestureDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - id
+        - name
+        - slug
+
+    TerritoryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - id
+        - name
+        - slug
+
+    ArtisanDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        bio:
+          type: string
+        portrait:
+          $ref: '#/components/schemas/ImageDTO'
+        territory:
+          $ref: '#/components/schemas/TerritoryDTO'
+        workshopLocation:
+          type: string
+        specialty:
+          type: string
+        yearsExperience:
+          type: string
+        transmissionMode:
+          type: string
+        equipment:
+          type: string
+      required:
+        - id
+        - name
+
+    ProductDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        intro:
+          type: string
+        coverImage:
+          $ref: '#/components/schemas/ImageDTO'
+        price:
+          $ref: '#/components/schemas/MoneyDTO'
+        availability:
+          $ref: '#/components/schemas/AvailabilityDTO'
+        gesture:
+          $ref: '#/components/schemas/GestureDTO'
+        territory:
+          $ref: '#/components/schemas/TerritoryDTO'
+        defaultVariantId:
+          type: string
+      required:
+        - id
+        - slug
+        - title
+        - coverImage
+        - price
+        - availability
+        - gesture
+        - territory
+
+    ProductDetailDTO:
+      allOf:
+        - $ref: '#/components/schemas/ProductDTO'
+        - type: object
+          properties:
+            images:
+              type: array
+              items:
+                $ref: '#/components/schemas/ImageDTO'
+              description: Secondary images (excludes coverImage)
+            description:
+              type: string
+              description: HTML content (sanitized)
+            dimensions:
+              type: string
+            materials:
+              type: array
+              items:
+                type: string
+            artisan:
+              $ref: '#/components/schemas/ArtisanDTO'
+            acquisition:
+              type: string
+            referenceSheet:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - images
+
+    ArticleDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+        coverImage:
+          $ref: '#/components/schemas/ImageDTO'
+        publishedAt:
+          type: string
+        category:
+          type: string
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+            avatar:
+              $ref: '#/components/schemas/ImageDTO'
+          required:
+            - name
+      required:
+        - id
+        - slug
+        - title
+        - coverImage
+        - publishedAt
+
+    ArticleDetailDTO:
+      allOf:
+        - $ref: '#/components/schemas/ArticleDTO'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: HTML content (sanitized)
+            images:
+              type: array
+              items:
+                $ref: '#/components/schemas/ImageDTO'
+            relatedProducts:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductDTO'
+              maxItems: 4
+          required:
+            - content
+
+    PaginatedProductResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDTO'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+        - data
+        - pagination
+
+    PaginatedArticleResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleDTO'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required:
+        - data
+        - pagination
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+
+    CheckoutPayloadItem:
+      type: object
+      properties:
+        productId:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        variantId:
+          type: string
+      required:
+        - productId
+        - quantity
+
+    CheckoutSessionDTO:
+      type: object
+      properties:
+        cartId:
+          type: string
+        checkoutUrl:
+          type: string
+      required:
+        - cartId
+
+    CheckoutStatusDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [DRAFT, LOCKED, PAID, CANCELLED, EXPIRED, FAILED]
+        orderId:
+          type: string
+      required:
+        - status
+
+    RegisterPayload:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - email
+        - password
+
+    LoginPayload:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    CustomerDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - id
+        - email
+
+    ContactPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - subject
+        - message
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+      required:
+        - error
+        - code

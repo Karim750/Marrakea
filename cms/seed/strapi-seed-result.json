@@ -1,0 +1,27 @@
+{
+  "territoryId": 3,
+  "territoryDocumentId": "xecjcjfc83ju4e24z3v2emyg",
+  "gestureId": 3,
+  "gestureDocumentId": "q13bdtun21y9mqgq52vlgt0k",
+  "artisanId": 4,
+  "artisanDocumentId": "sf47x8vtntll2meqnwsnr67y",
+  "productPageId": 2,
+  "productPageDocumentId": "vl4696g6tswvqs04pnt13tse",
+  "articleId": 2,
+  "articleDocumentId": "pup6hr3ybp40igtu5u72blvy",
+  "mediaIds": {
+    "artisanPortrait": 7,
+    "productCover": 8,
+    "productImage1": 9,
+    "productImage2": 10,
+    "articleCover": 11,
+    "authorAvatar": 12
+  },
+  "slugs": {
+    "territory": "safi",
+    "gesture": "poterie",
+    "artisan": "hassan-el-fassi",
+    "productPage": "vase-terre-rouge",
+    "article": "poterie-safi-heritage"
+  }
+}

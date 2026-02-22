@@ -1,0 +1,895 @@
+openapi: 3.0.3
+info:
+  title: MARRAKEA BFF API
+  version: "1.0.0"
+  description: |
+    Backend-For-Frontend API for Marrakea Next.js storefront.
+    Sources:
+    - Strapi (editorial/discovery)
+    - Medusa (commerce)
+    The BFF returns strict DTOs and hides upstream schemas.
+
+servers:
+  - url: "{{BFF_URL}}"
+    description: BFF Base URL (dev/prod)
+
+tags:
+  - name: Health
+  - name: Catalog
+  - name: Blog
+  - name: Checkout
+  - name: Account
+  - name: Contact
+
+components:
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: marrakea_session
+      description: httpOnly session cookie set by /account/login (token inside)
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+          example: "Human readable error message"
+        code:
+          type: string
+          example: "ERROR_CODE"
+        details:
+          type: object
+          additionalProperties: true
+
+    ImageDTO:
+      type: object
+      required: [url, alt]
+      properties:
+        url:
+          type: string
+          format: uri
+          example: "https://cdn.marrakea.com/products/vase.webp"
+        alt:
+          type: string
+          example: "Vase en terre rouge"
+        width:
+          type: integer
+          example: 800
+        height:
+          type: integer
+          example: 1000
+        blurDataUrl:
+          type: string
+          description: Optional base64 blur placeholder
+          example: "data:image/jpeg;base64,..."
+
+    MoneyDTO:
+      type: object
+      required: [amount, currency, formattedPrice]
+      properties:
+        amount:
+          type: number
+          format: float
+          example: 120.0
+        currency:
+          type: string
+          enum: [EUR]
+          example: "EUR"
+        formattedPrice:
+          type: string
+          example: "120,00 €"
+
+    AvailabilityDTO:
+      type: object
+      required: [inStock, purchaseMode, label]
+      properties:
+        inStock:
+          type: boolean
+          example: true
+        purchaseMode:
+          type: string
+          enum: [unique, standard]
+          example: "unique"
+        label:
+          type: string
+          example: "Pièce unique"
+
+    GestureDTO:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id: { type: string, example: "12" }
+        name: { type: string, example: "Poterie" }
+        slug: { type: string, example: "poterie" }
+
+    TerritoryDTO:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id: { type: string, example: "3" }
+        name: { type: string, example: "Safi" }
+        slug: { type: string, example: "safi" }
+
+    ArtisanDTO:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, example: "7" }
+        name: { type: string, example: "Hassan El Fassi" }
+        bio: { type: string, nullable: true }
+        portrait:
+          allOf:
+            - $ref: "#/components/schemas/ImageDTO"
+          nullable: true
+        territory:
+          allOf:
+            - $ref: "#/components/schemas/TerritoryDTO"
+          nullable: true
+        workshopLocation: { type: string, nullable: true }
+        specialty: { type: string, nullable: true }
+        yearsExperience: { type: string, nullable: true }
+        transmissionMode: { type: string, nullable: true }
+        equipment: { type: string, nullable: true }
+
+    ProductDTO:
+      type: object
+      required:
+        - id
+        - slug
+        - title
+        - coverImage
+        - price
+        - availability
+        - gesture
+        - territory
+      properties:
+        id:
+          type: string
+          example: "prod_01KFR44BAGGNV1NG18BTZEYJ15"
+        slug:
+          type: string
+          example: "vase-terre-rouge"
+        title:
+          type: string
+          example: "Vase en terre rouge"
+        intro:
+          type: string
+          nullable: true
+        coverImage:
+          $ref: "#/components/schemas/ImageDTO"
+        price:
+          $ref: "#/components/schemas/MoneyDTO"
+        availability:
+          $ref: "#/components/schemas/AvailabilityDTO"
+        gesture:
+          $ref: "#/components/schemas/GestureDTO"
+        territory:
+          $ref: "#/components/schemas/TerritoryDTO"
+        defaultVariantId:
+          type: string
+          nullable: true
+          description: Optional v1; recommended to avoid checkout N+1
+          example: "variant_01KFR44BB21MW1GX57TS6J8RSP"
+
+    ProductDetailDTO:
+      allOf:
+        - $ref: "#/components/schemas/ProductDTO"
+        - type: object
+          required: [images]
+          properties:
+            images:
+              type: array
+              description: Secondary images only (coverImage excluded)
+              items:
+                $ref: "#/components/schemas/ImageDTO"
+            description:
+              type: string
+              nullable: true
+              description: Sanitized HTML
+              example: "<p>Ce vase...</p>"
+            dimensions:
+              type: string
+              nullable: true
+            materials:
+              type: array
+              nullable: true
+              items: { type: string }
+            artisan:
+              allOf:
+                - $ref: "#/components/schemas/ArtisanDTO"
+              nullable: true
+            acquisition:
+              type: string
+              nullable: true
+            referenceSheet:
+              type: object
+              nullable: true
+              additionalProperties:
+                type: string
+
+    PaginationMeta:
+      type: object
+      required: [page, limit, total, totalPages]
+      properties:
+        page: { type: integer, example: 1 }
+        limit: { type: integer, example: 12 }
+        total: { type: integer, example: 48 }
+        totalPages: { type: integer, example: 4 }
+
+    PaginatedProductsResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductDTO"
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    ArticleAuthorDTO:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Sarah Bennani" }
+        avatar:
+          allOf:
+            - $ref: "#/components/schemas/ImageDTO"
+          nullable: true
+
+    ArticleDTO:
+      type: object
+      required: [id, slug, title, coverImage, publishedAt]
+      properties:
+        id: { type: string, example: "21" }
+        slug: { type: string, example: "poterie-safi-heritage" }
+        title: { type: string, example: "La poterie de Safi : un héritage ancestral" }
+        excerpt: { type: string, nullable: true }
+        coverImage: { $ref: "#/components/schemas/ImageDTO" }
+        publishedAt:
+          type: string
+          format: date-time
+          example: "2026-01-15T10:00:00Z"
+        category: { type: string, nullable: true }
+        author:
+          allOf:
+            - $ref: "#/components/schemas/ArticleAuthorDTO"
+          nullable: true
+
+    ArticleDetailDTO:
+      allOf:
+        - $ref: "#/components/schemas/ArticleDTO"
+        - type: object
+          required: [content]
+          properties:
+            content:
+              type: string
+              description: Sanitized HTML content
+              example: "<article><p>...</p></article>"
+            images:
+              type: array
+              nullable: true
+              items: { $ref: "#/components/schemas/ImageDTO" }
+            relatedProducts:
+              type: array
+              nullable: true
+              maxItems: 4
+              items: { $ref: "#/components/schemas/ProductDTO" }
+
+    PaginatedArticlesResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/ArticleDTO" }
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    CheckoutPayloadItem:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: string
+          example: "prod_01KFR44BAGGNV1NG18BTZEYJ15"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+        variantId:
+          type: string
+          nullable: true
+          example: "variant_01KFR44BB21MW1GX57TS6J8RSP"
+
+    CheckoutSessionDTO:
+      type: object
+      required: [cartId]
+      properties:
+        cartId:
+          type: string
+          example: "cart_01KF..."
+        checkoutUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://checkout.stripe.com/c/pay/cs_test_..."
+
+    CheckoutStatusDTO:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [DRAFT, LOCKED, PAID, CANCELLED, EXPIRED, FAILED]
+          example: "PAID"
+        orderId:
+          type: string
+          nullable: true
+          example: "order_abc123"
+
+    ContactFormDTO:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name: { type: string, example: "Jean Dupont" }
+        email: { type: string, format: email, example: "jean.dupont@example.com" }
+        subject: { type: string, example: "Question sur un produit" }
+        message: { type: string, example: "Bonjour, j'aimerais..." }
+
+    ContactSuccessResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success: { type: boolean, example: true }
+        message: { type: string, example: "Message envoyé avec succès" }
+
+    RegisterPayload:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: "user@example.com" }
+        password: { type: string, example: "StrongPassword123!" }
+        firstName: { type: string, nullable: true, example: "Jean" }
+        lastName: { type: string, nullable: true, example: "Dupont" }
+
+    LoginPayload:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: "user@example.com" }
+        password: { type: string, example: "StrongPassword123!" }
+
+    CustomerDTO:
+      type: object
+      required: [id, email]
+      properties:
+        id: { type: string, example: "cus_01KF..." }
+        email: { type: string, format: email, example: "user@example.com" }
+        firstName: { type: string, nullable: true, example: "Jean" }
+        lastName: { type: string, nullable: true, example: "Dupont" }
+
+    LogoutResponse:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean, example: true }
+
+    StockResponse:
+      type: object
+      required: [inStock]
+      properties:
+        inStock: { type: boolean, example: true }
+
+    HealthResponse:
+      type: object
+      required: [status, version, timestamp, services]
+      properties:
+        status: { type: string, example: "healthy" }
+        version: { type: string, example: "1.0.0" }
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-01-25T12:00:00Z"
+        services:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            strapi: "up"
+            medusa: "up"
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HealthResponse" }
+
+  # -------------------------------------------------------------------------
+  # Catalog
+  # -------------------------------------------------------------------------
+
+  /catalog/products:
+    get:
+      tags: [Catalog]
+      summary: List products (paginated)
+      operationId: listProducts
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema: { type: integer, default: 1, minimum: 1 }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, default: 12, minimum: 1, maximum: 100 }
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+        - name: gesture
+          in: query
+          required: false
+          schema: { type: string, description: "gesture slug" }
+        - name: territory
+          in: query
+          required: false
+          schema: { type: string, description: "territory slug" }
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [newest, name_asc, price_asc, price_desc]
+          description: price_asc/price_desc are unsupported in v1 (returns 400)
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=60, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedProductsResponse" }
+        "400":
+          description: Unsupported sort or invalid query
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /catalog/products/featured:
+    get:
+      tags: [Catalog]
+      summary: Get featured products
+      operationId: featuredProducts
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=300, stale-while-revalidate=600"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProductDTO" }
+
+  /catalog/products/{slug}:
+    get:
+      tags: [Catalog]
+      summary: Get product detail by slug
+      operationId: getProductDetail
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=60, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProductDetailDTO" }
+        "404":
+          description: Product not found
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /catalog/products/{productId}/stock:
+    get:
+      tags: [Catalog]
+      summary: Check realtime stock (no-store)
+      operationId: checkProductStock
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StockResponse" }
+
+  /catalog/gestures:
+    get:
+      tags: [Catalog]
+      summary: List gestures
+      operationId: listGestures
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=3600, stale-while-revalidate=86400"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/GestureDTO" }
+
+  /catalog/territories:
+    get:
+      tags: [Catalog]
+      summary: List territories
+      operationId: listTerritories
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=3600, stale-while-revalidate=86400"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TerritoryDTO" }
+
+  # -------------------------------------------------------------------------
+  # Blog
+  # -------------------------------------------------------------------------
+
+  /blog/articles:
+    get:
+      tags: [Blog]
+      summary: List articles (paginated)
+      operationId: listArticles
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema: { type: integer, default: 1, minimum: 1 }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+        - name: category
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=120, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedArticlesResponse" }
+
+  /blog/articles/{slug}:
+    get:
+      tags: [Blog]
+      summary: Get article detail by slug
+      operationId: getArticleDetail
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "public, s-maxage=120, stale-while-revalidate=300"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ArticleDetailDTO" }
+        "404":
+          description: Article not found
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  # -------------------------------------------------------------------------
+  # Checkout
+  # -------------------------------------------------------------------------
+
+  /checkout/session:
+    post:
+      tags: [Checkout]
+      summary: Create checkout session (Medusa-native cart + payment session)
+      operationId: createCheckoutSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              items: { $ref: "#/components/schemas/CheckoutPayloadItem" }
+      responses:
+        "201":
+          description: Created
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CheckoutSessionDTO" }
+        "400":
+          description: Invalid request (e.g. quantity)
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: Product not found
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: Out of stock
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "500":
+          description: Payment provider error
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /checkout/status:
+    get:
+      tags: [Checkout]
+      summary: Get checkout status (polling)
+      operationId: getCheckoutStatus
+      parameters:
+        - name: cart_id
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CheckoutStatusDTO" }
+        "400":
+          description: Missing/invalid cart_id
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  # -------------------------------------------------------------------------
+  # Account
+  # -------------------------------------------------------------------------
+
+  /account/register:
+    post:
+      tags: [Account]
+      summary: Register customer
+      operationId: accountRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterPayload" }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomerDTO" }
+        "400":
+          description: Validation error
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /account/login:
+    post:
+      tags: [Account]
+      summary: Login customer (sets httpOnly cookie)
+      operationId: accountLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginPayload" }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Set-Cookie:
+              schema: { type: string }
+              description: httpOnly session cookie
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomerDTO" }
+        "401":
+          description: Invalid credentials
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /account/me:
+    get:
+      tags: [Account]
+      summary: Get current customer
+      operationId: accountMe
+      security:
+        - CookieAuth: []
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomerDTO" }
+        "401":
+          description: Unauthenticated
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /account/logout:
+    post:
+      tags: [Account]
+      summary: Logout (clears cookie)
+      operationId: accountLogout
+      responses:
+        "200":
+          description: OK
+          headers:
+            Set-Cookie:
+              schema: { type: string }
+              description: cleared cookie
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LogoutResponse" }
+
+  # -------------------------------------------------------------------------
+  # Contact
+  # -------------------------------------------------------------------------
+
+  /contact:
+    post:
+      tags: [Contact]
+      summary: Submit contact form
+      operationId: submitContactForm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContactFormDTO" }
+      responses:
+        "200":
+          description: OK
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContactSuccessResponse" }
+        "400":
+          description: Invalid data
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "429":
+          description: Rate limited
+          headers:
+            Cache-Control:
+              schema: { type: string }
+              example: "no-store"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }

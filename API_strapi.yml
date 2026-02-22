@@ -1,0 +1,783 @@
+openapi: 3.0.3
+info:
+  title: MARRAKEA — Strapi CMS API (Swagger / OpenAPI 3.0)
+  version: 1.0.0
+  description: >
+    OpenAPI spec to test Strapi (Content API + Upload) in Postman/Swagger UI.
+    This is a pragmatic spec focused on your Marrakea content-types:
+    territories, gestures, artisans, product-pages, articles + upload plugin.
+servers:
+  - url: "{baseUrl}"
+    description: Strapi base URL
+    variables:
+      baseUrl:
+        default: "http://localhost:1337"
+
+tags:
+  - name: Auth
+  - name: Territories
+  - name: Gestures
+  - name: Artisans
+  - name: ProductPages
+  - name: Articles
+  - name: Upload
+
+components:
+  securitySchemes:
+    StrapiBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    StrapiError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status: { type: integer }
+            name: { type: string }
+            message: { type: string }
+            details: { type: object, additionalProperties: true }
+
+    StrapiMeta:
+      type: object
+      additionalProperties: true
+
+    StrapiPagination:
+      type: object
+      properties:
+        page: { type: integer }
+        pageSize: { type: integer }
+        pageCount: { type: integer }
+        total: { type: integer }
+
+    StrapiListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              attributes:
+                type: object
+                additionalProperties: true
+        meta:
+          type: object
+          properties:
+            pagination:
+              $ref: "#/components/schemas/StrapiPagination"
+
+    StrapiSingleResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          properties:
+            id: { type: integer }
+            attributes:
+              type: object
+              additionalProperties: true
+        meta:
+          $ref: "#/components/schemas/StrapiMeta"
+
+    StrapiCreateUpdateBody:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+
+    UploadFile:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        alternativeText: { type: string, nullable: true }
+        caption: { type: string, nullable: true }
+        width: { type: integer, nullable: true }
+        height: { type: integer, nullable: true }
+        formats: { type: object, nullable: true, additionalProperties: true }
+        hash: { type: string }
+        ext: { type: string, nullable: true }
+        mime: { type: string }
+        size: { type: number }
+        url: { type: string }
+        previewUrl: { type: string, nullable: true }
+        provider: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+security:
+  - StrapiBearer: []
+
+paths:
+  # ------------------------------------------------------------
+  # (Optional) Strapi Auth (if you use Users & Permissions plugin)
+  # ------------------------------------------------------------
+  /api/auth/local:
+    post:
+      tags: [Auth]
+      summary: Login (Users & Permissions plugin)
+      description: >
+        Optional. Use only if you enable local auth.
+        Returns JWT token to use as Bearer for authenticated endpoints.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identifier, password]
+              properties:
+                identifier: { type: string, example: "admin@example.com" }
+                password: { type: string, example: "password" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt: { type: string }
+                  user: { type: object, additionalProperties: true }
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiError" }
+
+  # ------------------------------------------------------------
+  # Territories
+  # ------------------------------------------------------------
+  /api/territories:
+    get:
+      tags: [Territories]
+      summary: List territories
+      parameters:
+        - in: query
+          name: pagination[page]
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pagination[pageSize]
+          schema: { type: integer, default: 25 }
+        - in: query
+          name: sort[0]
+          schema: { type: string, example: "name:asc" }
+        - in: query
+          name: filters[slug][$eq]
+          schema: { type: string }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiError" }
+    post:
+      tags: [Territories]
+      summary: Create territory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+            example:
+              data:
+                name: "Safi"
+                slug: "safi"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiError" }
+
+  /api/territories/{id}:
+    get:
+      tags: [Territories]
+      summary: Get territory by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    put:
+      tags: [Territories]
+      summary: Update territory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    delete:
+      tags: [Territories]
+      summary: Delete territory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  # ------------------------------------------------------------
+  # Gestures
+  # ------------------------------------------------------------
+  /api/gestures:
+    get:
+      tags: [Gestures]
+      summary: List gestures
+      parameters:
+        - in: query
+          name: pagination[page]
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pagination[pageSize]
+          schema: { type: integer, default: 25 }
+        - in: query
+          name: sort[0]
+          schema: { type: string, example: "name:asc" }
+        - in: query
+          name: filters[slug][$eq]
+          schema: { type: string }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+    post:
+      tags: [Gestures]
+      summary: Create gesture
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+            example:
+              data:
+                name: "Poterie"
+                slug: "poterie"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  /api/gestures/{id}:
+    get:
+      tags: [Gestures]
+      summary: Get gesture by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    put:
+      tags: [Gestures]
+      summary: Update gesture
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    delete:
+      tags: [Gestures]
+      summary: Delete gesture
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  # ------------------------------------------------------------
+  # Artisans
+  # ------------------------------------------------------------
+  /api/artisans:
+    get:
+      tags: [Artisans]
+      summary: List artisans
+      parameters:
+        - in: query
+          name: pagination[page]
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pagination[pageSize]
+          schema: { type: integer, default: 25 }
+        - in: query
+          name: sort[0]
+          schema: { type: string, example: "name:asc" }
+        - in: query
+          name: filters[slug][$eq]
+          schema: { type: string }
+        - in: query
+          name: populate
+          schema: { type: string, example: "portrait,territory" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+    post:
+      tags: [Artisans]
+      summary: Create artisan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+            example:
+              data:
+                name: "Hassan El Fassi"
+                slug: "hassan-el-fassi"
+                bio: "Maître potier depuis 30 ans..."
+                workshopLocation: "Quartier des potiers, Safi"
+                specialty: "Poterie traditionnelle"
+                yearsExperience: "30 ans"
+                transmissionMode: "Transmission familiale"
+                equipment: "Tour de potier traditionnel"
+                territory: 1
+                portrait: 1
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  /api/artisans/{id}:
+    get:
+      tags: [Artisans]
+      summary: Get artisan by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: populate
+          schema: { type: string, example: "portrait,territory" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    put:
+      tags: [Artisans]
+      summary: Update artisan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    delete:
+      tags: [Artisans]
+      summary: Delete artisan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  # ------------------------------------------------------------
+  # Product Pages
+  # ------------------------------------------------------------
+  /api/product-pages:
+    get:
+      tags: [ProductPages]
+      summary: List product pages
+      parameters:
+        - in: query
+          name: pagination[page]
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pagination[pageSize]
+          schema: { type: integer, default: 12 }
+        - in: query
+          name: sort[0]
+          schema: { type: string, example: "publishedAt:desc" }
+        - in: query
+          name: filters[slug][$eq]
+          schema: { type: string }
+        - in: query
+          name: filters[medusa_product_id][$eq]
+          schema: { type: string }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+    post:
+      tags: [ProductPages]
+      summary: Create product page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+            example:
+              data:
+                title: "Vase en terre rouge"
+                slug: "vase-terre-rouge"
+                medusa_product_id: null
+                intro: "Vase artisanal façonné à la main..."
+                description_html: "<p>Ce vase...</p>"
+                dimensions: "H 35cm × Ø 18cm"
+                materials: ["Terre rouge de Safi", "Engobe naturel"]
+                acquisition: "Pièce unique. Expédition sous 3-5 jours ouvrés."
+                reference_sheet:
+                  Hauteur: "35 cm"
+                  Diamètre: "18 cm"
+                  Poids: "1,2 kg"
+                  Matière: "Terre rouge"
+                  Origine: "Safi, Maroc"
+                is_featured: true
+                featured_rank: 1
+                gesture: 1
+                territory: 1
+                artisan: 1
+                cover_image: 1
+                images: [2,3]
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  /api/product-pages/{id}:
+    get:
+      tags: [ProductPages]
+      summary: Get product page by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    put:
+      tags: [ProductPages]
+      summary: Update product page (full update)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    delete:
+      tags: [ProductPages]
+      summary: Delete product page
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  # ------------------------------------------------------------
+  # Articles
+  # ------------------------------------------------------------
+  /api/articles:
+    get:
+      tags: [Articles]
+      summary: List articles
+      parameters:
+        - in: query
+          name: pagination[page]
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pagination[pageSize]
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: sort[0]
+          schema: { type: string, example: "publishedAt:desc" }
+        - in: query
+          name: filters[slug][$eq]
+          schema: { type: string }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+    post:
+      tags: [Articles]
+      summary: Create article
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+            example:
+              data:
+                title: "La poterie de Safi : un héritage ancestral"
+                slug: "poterie-safi-heritage"
+                excerpt: "Découvrez l'histoire fascinante..."
+                content_html: "<article><p>...</p></article>"
+                category: "Savoir-faire"
+                publishedAt: "2024-01-15T10:00:00Z"
+                cover_image: 10
+                author:
+                  name: "Sarah Bennani"
+                  avatar: 11
+                related_products: [1]
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  /api/articles/{id}:
+    get:
+      tags: [Articles]
+      summary: Get article by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: populate
+          schema: { type: string, example: "*" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    put:
+      tags: [Articles]
+      summary: Update article
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StrapiCreateUpdateBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+    delete:
+      tags: [Articles]
+      summary: Delete article
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiSingleResponse" }
+
+  # ------------------------------------------------------------
+  # Upload plugin
+  # ------------------------------------------------------------
+  /api/upload:
+    post:
+      tags: [Upload]
+      summary: Upload one or more files (multipart)
+      description: >
+        Use multipart/form-data with key "files".
+        Optional "fileInfo" can be provided as JSON string to set name/alt/caption.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                fileInfo:
+                  type: string
+                  description: JSON string with metadata
+            encoding:
+              files:
+                style: form
+                explode: true
+      responses:
+        "200":
+          description: Uploaded files
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/UploadFile" }
+        "400":
+          description: Upload error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiError" }
+
+  /api/upload/files:
+    get:
+      tags: [Upload]
+      summary: List uploaded files
+      parameters:
+        - in: query
+          name: pagination[page]
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pagination[pageSize]
+          schema: { type: integer, default: 25 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/UploadFile" }
+
+  /api/upload/files/{id}:
+    get:
+      tags: [Upload]
+      summary: Get uploaded file by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UploadFile" }

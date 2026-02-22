@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "articles",
+  "info": {
+    "singularName": "article",
+    "pluralName": "articles",
+    "displayName": "Article",
+    "description": "Editorial article about artisans and crafts"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "excerpt": {
+      "type": "text"
+    },
+    "content_html": {
+      "type": "richtext"
+    },
+    "category": {
+      "type": "string"
+    },
+    "cover_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "author": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.author"
+    },
+    "related_products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-page.product-page"
+    }
+  }
+}

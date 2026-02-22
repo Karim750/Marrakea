@@ -1,0 +1,594 @@
+openapi: 3.0.3
+info:
+  title: Marrakea Upstreams Debug (Strapi + Medusa)
+  version: "1.0.0"
+  description: |
+    Debug collection for upstream APIs before/alongside BFF implementation.
+    Includes:
+    - Strapi Content API calls used by BFF (/api/*)
+    - Medusa Store API calls used by BFF (/store/* + /auth/*)
+
+servers:
+  - url: "{{STRAPI_BASE_URL}}"
+    description: Strapi Base URL
+  - url: "{{MEDUSA_BASE_URL}}"
+    description: Medusa Base URL
+
+tags:
+  - name: Strapi
+    description: Strapi Content API (server-to-server token)
+  - name: Medusa Store
+    description: Medusa Store API (publishable key + region)
+  - name: Medusa Auth
+    description: Medusa customer auth (register/login/me)
+
+components:
+  securitySchemes:
+    StrapiToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Use: Bearer {{STRAPI_API_TOKEN}}'
+    MedusaPublishableKey:
+      type: apiKey
+      in: header
+      name: x-publishable-api-key
+      description: 'Publishable key: {{MEDUSA_PUBLISHABLE_KEY}}'
+    MedusaCustomerBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    RegionId:
+      name: region_id
+      in: query
+      required: true
+      schema:
+        type: string
+      example: "{{MEDUSA_REGION_ID}}"
+    CurrencyCode:
+      name: currency_code
+      in: query
+      required: false
+      schema:
+        type: string
+        default: EUR
+      example: EUR
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+      example: 50
+    Offset:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 0
+      example: 0
+
+  schemas:
+    StrapiListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+        meta:
+          type: object
+    MedusaProductsListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items: {}
+        count:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+    MedusaCartResponse:
+      type: object
+      properties:
+        cart: {}
+    MedusaAuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        customer: {}
+
+paths:
+
+  ###########################################################################
+  # STRAPI — TAXONOMIES
+  ###########################################################################
+
+  /api/gestures:
+    get:
+      tags: [Strapi]
+      summary: Strapi — List Gestures (sorted)
+      operationId: strapiListGestures
+      security:
+        - StrapiToken: []
+      parameters:
+        - name: pagination[page]
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: pagination[pageSize]
+          in: query
+          required: false
+          schema: { type: integer, default: 100 }
+        - name: sort[0]
+          in: query
+          required: false
+          schema: { type: string, default: "name:asc" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+
+  /api/territories:
+    get:
+      tags: [Strapi]
+      summary: Strapi — List Territories (sorted)
+      operationId: strapiListTerritories
+      security:
+        - StrapiToken: []
+      parameters:
+        - name: pagination[page]
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: pagination[pageSize]
+          in: query
+          required: false
+          schema: { type: integer, default: 100 }
+        - name: sort[0]
+          in: query
+          required: false
+          schema: { type: string, default: "name:asc" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+
+  ###########################################################################
+  # STRAPI — PRODUCT PAGES
+  ###########################################################################
+
+  /api/product-pages:
+    get:
+      tags: [Strapi]
+      summary: Strapi — List ProductPages (with filters/pagination/populates)
+      operationId: strapiListProductPages
+      security:
+        - StrapiToken: []
+      description: |
+        This endpoint is used by the BFF to drive discovery.
+        Typical query example (paste in Postman URL bar):
+        /api/product-pages?pagination[page]=1&pagination[pageSize]=12&sort[0]=publishedAt:desc&populate[cover_image]=true&populate[gesture]=true&populate[territory]=true&fields[0]=title&fields[1]=slug&fields[2]=intro&fields[3]=medusa_product_id&fields[4]=medusa_variant_id
+      parameters:
+        - name: pagination[page]
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: pagination[pageSize]
+          in: query
+          required: false
+          schema: { type: integer, default: 12 }
+        - name: sort[0]
+          in: query
+          required: false
+          schema: { type: string, default: "publishedAt:desc" }
+        - name: filters[slug][$eq]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: filters[gesture][slug][$eq]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: filters[territory][slug][$eq]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: filters[$or][0][title][$containsi]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: filters[$or][1][intro][$containsi]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: populate[cover_image]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+        - name: populate[gesture]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+        - name: populate[territory]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+
+  ###########################################################################
+  # STRAPI — ARTISANS
+  ###########################################################################
+
+  /api/artisans:
+    get:
+      tags: [Strapi]
+      summary: Strapi — List/Filter Artisans
+      operationId: strapiListArtisans
+      security:
+        - StrapiToken: []
+      description: |
+        Useful for linking artisan data to a product via medusa_product_id metadata if you added that.
+        Example filter:
+        /api/artisans?filters[medusa_product_id][$eq]=prod_...&populate[portrait]=true&populate[territory]=true
+      parameters:
+        - name: pagination[page]
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: pagination[pageSize]
+          in: query
+          required: false
+          schema: { type: integer, default: 25 }
+        - name: filters[medusa_product_id][$eq]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: populate[portrait]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+        - name: populate[territory]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+
+  ###########################################################################
+  # STRAPI — BLOG
+  ###########################################################################
+
+  /api/articles:
+    get:
+      tags: [Strapi]
+      summary: Strapi — List Articles (with author + cover)
+      operationId: strapiListArticles
+      security:
+        - StrapiToken: []
+      description: |
+        Typical query example:
+        /api/articles?pagination[page]=1&pagination[pageSize]=10&sort[0]=publishedAt:desc&populate[cover_image]=true&populate[author][populate][avatar]=true
+      parameters:
+        - name: pagination[page]
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: pagination[pageSize]
+          in: query
+          required: false
+          schema: { type: integer, default: 10 }
+        - name: sort[0]
+          in: query
+          required: false
+          schema: { type: string, default: "publishedAt:desc" }
+        - name: filters[slug][$eq]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: filters[category][$eq]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: populate[cover_image]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+        - name: populate[images]
+          in: query
+          required: false
+          schema: { type: string }
+        - name: populate[author][populate][avatar]
+          in: query
+          required: false
+          schema: { type: string, default: "true" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StrapiListResponse" }
+
+  ###########################################################################
+  # MEDUSA STORE — PRODUCTS
+  ###########################################################################
+
+  /store/products:
+    get:
+      tags: [Medusa Store]
+      summary: Medusa — List Products (Store)
+      operationId: medusaStoreListProducts
+      security:
+        - MedusaPublishableKey: []
+      parameters:
+        - $ref: "#/components/parameters/RegionId"
+        - $ref: "#/components/parameters/CurrencyCode"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaProductsListResponse" }
+        "401":
+          description: Missing/invalid publishable key
+        "403":
+          description: Forbidden (sales channel / key mismatch)
+
+  /store/products/{id}:
+    get:
+      tags: [Medusa Store]
+      summary: Medusa — Get Product by ID (Store)
+      operationId: medusaStoreGetProductById
+      security:
+        - MedusaPublishableKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: "#/components/parameters/RegionId"
+        - $ref: "#/components/parameters/CurrencyCode"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product: {}
+        "404":
+          description: Not found
+
+  ###########################################################################
+  # MEDUSA STORE — CART / CHECKOUT
+  ###########################################################################
+
+  /store/carts:
+    post:
+      tags: [Medusa Store]
+      summary: Medusa — Create Cart
+      operationId: medusaStoreCreateCart
+      security:
+        - MedusaPublishableKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [region_id]
+              properties:
+                region_id:
+                  type: string
+                  example: "{{MEDUSA_REGION_ID}}"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaCartResponse" }
+
+  /store/carts/{cart_id}/line-items:
+    post:
+      tags: [Medusa Store]
+      summary: Medusa — Add Line Item
+      operationId: medusaStoreAddLineItem
+      security:
+        - MedusaPublishableKey: []
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [variant_id, quantity]
+              properties:
+                variant_id:
+                  type: string
+                  example: "variant_..."
+                quantity:
+                  type: integer
+                  example: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaCartResponse" }
+
+  /store/carts/{cart_id}/payment-sessions:
+    post:
+      tags: [Medusa Store]
+      summary: Medusa — Create Payment Sessions
+      operationId: medusaStoreCreatePaymentSessions
+      security:
+        - MedusaPublishableKey: []
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaCartResponse" }
+
+  /store/carts/{cart_id}/payment-session:
+    post:
+      tags: [Medusa Store]
+      summary: Medusa — Select Payment Provider
+      operationId: medusaStoreSelectPaymentProvider
+      security:
+        - MedusaPublishableKey: []
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_id]
+              properties:
+                provider_id:
+                  type: string
+                  example: "stripe"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaCartResponse" }
+
+  /store/carts/{cart_id}/complete:
+    post:
+      tags: [Medusa Store]
+      summary: Medusa — Complete Cart (Optional)
+      operationId: medusaStoreCompleteCart
+      security:
+        - MedusaPublishableKey: []
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type: { type: string }
+                  data: {}
+        "409":
+          description: Not ready / out of stock / payment not selected
+
+  ###########################################################################
+  # MEDUSA AUTH — CUSTOMER
+  ###########################################################################
+
+  /auth/customer/emailpass/register:
+    post:
+      tags: [Medusa Auth]
+      summary: Medusa — Customer Register
+      operationId: medusaCustomerRegister
+      security:
+        - MedusaPublishableKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, example: "user@example.com" }
+                password: { type: string, example: "StrongPassword123!" }
+                first_name: { type: string, example: "Jean" }
+                last_name: { type: string, example: "Dupont" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaAuthResponse" }
+
+  /auth/customer/emailpass:
+    post:
+      tags: [Medusa Auth]
+      summary: Medusa — Customer Login
+      operationId: medusaCustomerLogin
+      security:
+        - MedusaPublishableKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, example: "user@example.com" }
+                password: { type: string, example: "StrongPassword123!" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MedusaAuthResponse" }
+        "401":
+          description: Invalid credentials
+
+  /store/customers/me:
+    get:
+      tags: [Medusa Auth]
+      summary: Medusa — Customer Me (Bearer token)
+      operationId: medusaCustomerMe
+      security:
+        - MedusaPublishableKey: []
+        - MedusaCustomerBearer: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer: {}
+        "401":
+          description: Unauthenticated

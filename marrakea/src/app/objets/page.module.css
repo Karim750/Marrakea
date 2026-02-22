@@ -1,0 +1,59 @@
+.page {
+  width: 100%;
+}
+
+/* Hero */
+.hero {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--page-padding-x);
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  margin: 0 0 var(--space-md);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: var(--font-size-5xl);
+  font-weight: 500;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-lg);
+  line-height: 1.1;
+}
+
+.intro {
+  font-size: var(--font-size-lg);
+  color: var(--color-secondary);
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .title {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .hero {
+    padding: var(--space-2xl) var(--page-padding-x);
+  }
+
+  .title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .intro {
+    font-size: var(--font-size-base);
+  }
+}

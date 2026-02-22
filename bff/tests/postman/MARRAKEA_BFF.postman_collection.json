@@ -1,0 +1,1128 @@
+{
+  "info": {
+    "_postman_id": "marrakea-bff-collection",
+    "name": "MARRAKEA BFF",
+    "description": "End-to-end tests for the MARRAKEA BFF API.\nCovers all 16 endpoints per /spec/00-contract.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Smoke",
+      "description": "Quick smoke tests to verify core endpoints are responsive. Run this folder first to validate basic connectivity.",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has status ok', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.status).to.equal('ok');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/health",
+              "host": ["{{BFF_URL}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Catalog - Products List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 500 (upstream)', function () {",
+                  "    pm.expect([200, 500]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response structure valid', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('data');",
+                  "        pm.expect(json).to.have.property('pagination');",
+                  "        if (json.data.length > 0) {",
+                  "            pm.collectionVariables.set('smoke_product_slug', json.data[0].slug);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products?page=1&limit=5",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Catalog - Product Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200, 404, or 500', function () {",
+                  "    pm.expect([200, 404, 500]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response structure valid on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('id');",
+                  "        pm.expect(json).to.have.property('slug');",
+                  "        pm.expect(json).to.have.property('title');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products/{{smoke_product_slug}}",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products", "{{smoke_product_slug}}"]
+            }
+          }
+        },
+        {
+          "name": "Blog - Articles List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 500 (upstream)', function () {",
+                  "    pm.expect([200, 500]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response structure valid', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('data');",
+                  "        pm.expect(json).to.have.property('pagination');",
+                  "        if (json.data.length > 0) {",
+                  "            pm.collectionVariables.set('smoke_article_slug', json.data[0].slug);",
+                  "        }",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/blog/articles?page=1&limit=5",
+              "host": ["{{BFF_URL}}"],
+              "path": ["blog", "articles"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Blog - Article Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200, 404, or 500', function () {",
+                  "    pm.expect([200, 404, 500]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response structure valid on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('id');",
+                  "        pm.expect(json).to.have.property('slug');",
+                  "        pm.expect(json).to.have.property('title');",
+                  "        pm.expect(json).to.have.property('content');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/blog/articles/{{smoke_article_slug}}",
+              "host": ["{{BFF_URL}}"],
+              "path": ["blog", "articles", "{{smoke_article_slug}}"]
+            }
+          }
+        },
+        {
+          "name": "Checkout - Session Create",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 500 (upstream)', function () {",
+                  "    pm.expect([200, 500]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response has cartId on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('cartId');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[]"
+            },
+            "url": {
+              "raw": "{{BFF_URL}}/checkout/session",
+              "host": ["{{BFF_URL}}"],
+              "path": ["checkout", "session"]
+            }
+          }
+        },
+        {
+          "name": "Account - Me (Unauthenticated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401 (expected unauthenticated)', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Error format correct', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('error');",
+                  "    pm.expect(json).to.have.property('code');",
+                  "    pm.expect(json.code).to.equal('UNAUTHENTICATED');",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/account/me",
+              "host": ["{{BFF_URL}}"],
+              "path": ["account", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has correct shape', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('status');",
+                  "    pm.expect(json).to.have.property('version');",
+                  "    pm.expect(json).to.have.property('timestamp');",
+                  "    pm.expect(json).to.have.property('services');",
+                  "    pm.expect(json.services).to.have.property('strapi');",
+                  "    pm.expect(json.services).to.have.property('medusa');",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/health",
+              "host": ["{{BFF_URL}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "GET /catalog/gestures",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is array of GestureDTO', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    if (json.length > 0) {",
+                  "        const item = json[0];",
+                  "        pm.expect(item).to.have.property('id');",
+                  "        pm.expect(item).to.have.property('name');",
+                  "        pm.expect(item).to.have.property('slug');",
+                  "        pm.expect(typeof item.id).to.equal('string');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is taxonomies profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=3600');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/gestures",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "gestures"]
+            }
+          }
+        },
+        {
+          "name": "GET /catalog/territories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is array of TerritoryDTO', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    if (json.length > 0) {",
+                  "        const item = json[0];",
+                  "        pm.expect(item).to.have.property('id');",
+                  "        pm.expect(item).to.have.property('name');",
+                  "        pm.expect(item).to.have.property('slug');",
+                  "        pm.expect(typeof item.id).to.equal('string');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is taxonomies profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=3600');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/territories",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "territories"]
+            }
+          }
+        },
+        {
+          "name": "GET /catalog/products (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is PaginatedResponse<ProductDTO>', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('data');",
+                  "    pm.expect(json).to.have.property('pagination');",
+                  "    pm.expect(json.pagination).to.have.property('page');",
+                  "    pm.expect(json.pagination).to.have.property('limit');",
+                  "    pm.expect(json.pagination).to.have.property('total');",
+                  "    pm.expect(json.pagination).to.have.property('totalPages');",
+                  "});",
+                  "",
+                  "pm.test('ProductDTO has required fields', function () {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data.length > 0) {",
+                  "        const product = json.data[0];",
+                  "        pm.expect(product).to.have.property('id');",
+                  "        pm.expect(product).to.have.property('slug');",
+                  "        pm.expect(product).to.have.property('title');",
+                  "        pm.expect(product).to.have.property('coverImage');",
+                  "        pm.expect(product).to.have.property('price');",
+                  "        pm.expect(product).to.have.property('availability');",
+                  "        pm.expect(product).to.have.property('gesture');",
+                  "        pm.expect(product).to.have.property('territory');",
+                  "        pm.expect(product.price).to.have.property('formattedPrice');",
+                  "        pm.expect(typeof product.id).to.equal('string');",
+                  "        pm.collectionVariables.set('product_slug', product.slug);",
+                  "        if (product.medusaProductId) {",
+                  "            pm.collectionVariables.set('medusa_product_id', product.medusaProductId);",
+                  "        }",
+                  "        if (product.defaultVariantId) {",
+                  "            pm.collectionVariables.set('variant_id', product.defaultVariantId);",
+                  "        }",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is products profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=60');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products?page=1&limit=12&sort=newest",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "12" },
+                { "key": "sort", "value": "newest" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /catalog/products (unsupported sort)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error code is UNSUPPORTED_SORT', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('error');",
+                  "    pm.expect(json).to.have.property('code');",
+                  "    pm.expect(json.code).to.equal('UNSUPPORTED_SORT');",
+                  "    pm.expect(json).to.have.property('details');",
+                  "    pm.expect(json.details).to.have.property('supported');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products?sort=price_asc",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products"],
+              "query": [
+                { "key": "sort", "value": "price_asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /catalog/products/featured",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is array of ProductDTO (max 6)', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    pm.expect(json.length).to.be.at.most(6);",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is featured profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=300');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products/featured",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products", "featured"]
+            }
+          }
+        },
+        {
+          "name": "GET /catalog/products/:slug",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is ProductDetailDTO', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('slug');",
+                  "    pm.expect(json).to.have.property('title');",
+                  "    pm.expect(json).to.have.property('coverImage');",
+                  "    pm.expect(json).to.have.property('price');",
+                  "    pm.expect(json).to.have.property('availability');",
+                  "    pm.expect(json).to.have.property('images');",
+                  "    pm.expect(json.images).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('images array excludes coverImage', function () {",
+                  "    const json = pm.response.json();",
+                  "    const coverUrl = json.coverImage.url;",
+                  "    const imageUrls = json.images.map(img => img.url);",
+                  "    pm.expect(imageUrls).to.not.include(coverUrl);",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is products profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=60');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products/{{product_slug}}",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products", "{{product_slug}}"]
+            }
+          }
+        },
+        {
+          "name": "GET /catalog/products/:productId/stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has inStock boolean', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('inStock');",
+                  "    pm.expect(typeof json.inStock).to.equal('boolean');",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/catalog/products/{{medusa_product_id}}/stock",
+              "host": ["{{BFF_URL}}"],
+              "path": ["catalog", "products", "{{medusa_product_id}}", "stock"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blog",
+      "item": [
+        {
+          "name": "GET /blog/articles (list)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is PaginatedResponse<ArticleDTO>', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('data');",
+                  "    pm.expect(json).to.have.property('pagination');",
+                  "    pm.expect(json.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('ArticleDTO has required fields', function () {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data.length > 0) {",
+                  "        const article = json.data[0];",
+                  "        pm.expect(article).to.have.property('id');",
+                  "        pm.expect(article).to.have.property('slug');",
+                  "        pm.expect(article).to.have.property('title');",
+                  "        pm.expect(article).to.have.property('coverImage');",
+                  "        pm.expect(article).to.have.property('publishedAt');",
+                  "        pm.expect(typeof article.id).to.equal('string');",
+                  "        pm.collectionVariables.set('article_slug', article.slug);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is articles profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=120');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/blog/articles?page=1&limit=10",
+              "host": ["{{BFF_URL}}"],
+              "path": ["blog", "articles"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /blog/articles/:slug",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is ArticleDetailDTO', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('slug');",
+                  "    pm.expect(json).to.have.property('title');",
+                  "    pm.expect(json).to.have.property('content');",
+                  "});",
+                  "",
+                  "pm.test('relatedProducts max 4 items', function () {",
+                  "    const json = pm.response.json();",
+                  "    if (json.relatedProducts) {",
+                  "        pm.expect(json.relatedProducts.length).to.be.at.most(4);",
+                  "        if (json.relatedProducts.length > 0) {",
+                  "            const product = json.relatedProducts[0];",
+                  "            pm.expect(product).to.have.property('price');",
+                  "            pm.expect(product).to.have.property('availability');",
+                  "        }",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is articles profile', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.include('s-maxage=120');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/blog/articles/{{article_slug}}",
+              "host": ["{{BFF_URL}}"],
+              "path": ["blog", "articles", "{{article_slug}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "item": [
+        {
+          "name": "POST /checkout/session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is CheckoutSessionDTO', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('cartId');",
+                  "    pm.expect(typeof json.cartId).to.equal('string');",
+                  "    pm.collectionVariables.set('cart_id', json.cartId);",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"productId\": \"{{medusa_product_id}}\",\n    \"quantity\": 1,\n    \"variantId\": \"{{variant_id}}\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{BFF_URL}}/checkout/session",
+              "host": ["{{BFF_URL}}"],
+              "path": ["checkout", "session"]
+            }
+          }
+        },
+        {
+          "name": "GET /checkout/status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is CheckoutStatusDTO', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('status');",
+                  "    const validStatuses = ['DRAFT', 'LOCKED', 'PAID', 'CANCELLED', 'EXPIRED', 'FAILED'];",
+                  "    pm.expect(validStatuses).to.include(json.status);",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/checkout/status?cart_id={{cart_id}}",
+              "host": ["{{BFF_URL}}"],
+              "path": ["checkout", "status"],
+              "query": [
+                { "key": "cart_id", "value": "{{cart_id}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account",
+      "item": [
+        {
+          "name": "POST /account/register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 400 (if already exists)', function () {",
+                  "    pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response is CustomerDTO on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('id');",
+                  "        pm.expect(json).to.have.property('email');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{BFF_URL}}/account/register",
+              "host": ["{{BFF_URL}}"],
+              "path": ["account", "register"]
+            }
+          }
+        },
+        {
+          "name": "POST /account/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 401', function () {",
+                  "    pm.expect([200, 401]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response is CustomerDTO on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('id');",
+                  "        pm.expect(json).to.have.property('email');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Set-Cookie header present on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        pm.expect(pm.response.headers.has('Set-Cookie')).to.be.true;",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BFF_URL}}/account/login",
+              "host": ["{{BFF_URL}}"],
+              "path": ["account", "login"]
+            }
+          }
+        },
+        {
+          "name": "GET /account/me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 401', function () {",
+                  "    pm.expect([200, 401]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Response is CustomerDTO on success', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('id');",
+                  "        pm.expect(json).to.have.property('email');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Error format correct on 401', function () {",
+                  "    if (pm.response.code === 401) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('error');",
+                  "        pm.expect(json).to.have.property('code');",
+                  "        pm.expect(json.code).to.equal('UNAUTHENTICATED');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/account/me",
+              "host": ["{{BFF_URL}}"],
+              "path": ["account", "me"]
+            }
+          }
+        },
+        {
+          "name": "POST /account/logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success: true', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('success');",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Set-Cookie header present (to clear)', function () {",
+                  "    pm.expect(pm.response.headers.has('Set-Cookie')).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BFF_URL}}/account/logout",
+              "host": ["{{BFF_URL}}"],
+              "path": ["account", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "POST /contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and message', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('success');",
+                  "    pm.expect(json).to.have.property('message');",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Cache-Control is no-store', function () {",
+                  "    pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jean Dupont\",\n  \"email\": \"jean.dupont@example.com\",\n  \"subject\": \"Question sur un produit\",\n  \"message\": \"Bonjour, je voudrais en savoir plus sur...\"\n}"
+            },
+            "url": {
+              "raw": "{{BFF_URL}}/contact",
+              "host": ["{{BFF_URL}}"],
+              "path": ["contact"]
+            }
+          }
+        },
+        {
+          "name": "POST /contact (rate limit test)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// This test is designed to be run multiple times to trigger rate limit",
+                  "console.log('Run this test 6+ times rapidly to trigger rate limit');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 429', function () {",
+                  "    pm.expect([200, 429]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test('Rate limit error format correct', function () {",
+                  "    if (pm.response.code === 429) {",
+                  "        const json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('error');",
+                  "        pm.expect(json).to.have.property('code');",
+                  "        pm.expect(json.code).to.equal('RATE_LIMIT_EXCEEDED');",
+                  "        pm.expect(json).to.have.property('details');",
+                  "        pm.expect(json.details).to.have.property('retryAfter');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rate Limit Test\",\n  \"email\": \"ratelimit@test.com\",\n  \"subject\": \"Rate limit test\",\n  \"message\": \"Testing rate limiting...\"\n}"
+            },
+            "url": {
+              "raw": "{{BFF_URL}}/contact",
+              "host": ["{{BFF_URL}}"],
+              "path": ["contact"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "product_slug",
+      "value": ""
+    },
+    {
+      "key": "medusa_product_id",
+      "value": ""
+    },
+    {
+      "key": "variant_id",
+      "value": ""
+    },
+    {
+      "key": "cart_id",
+      "value": ""
+    },
+    {
+      "key": "article_slug",
+      "value": ""
+    },
+    {
+      "key": "smoke_product_slug",
+      "value": "test-product"
+    },
+    {
+      "key": "smoke_article_slug",
+      "value": "test-article"
+    }
+  ]
+}

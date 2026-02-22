@@ -1,0 +1,51 @@
+.clientWidgets {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.cartLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.cartLink:hover {
+  color: var(--color-accent);
+}
+
+.cartLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.cartIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+  color: white;
+  border-radius: 9px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1;
+}

@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_shared_authors",
+  "info": {
+    "displayName": "Author",
+    "description": "Article author with name and avatar"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

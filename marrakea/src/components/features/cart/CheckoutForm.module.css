@@ -1,0 +1,47 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.paymentElement {
+  /* Stripe Payment Element renders here */
+}
+
+.error {
+  padding: 1rem;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 0.25rem;
+  color: #c33;
+  font-size: 0.9rem;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secureNote {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.5rem;
+}

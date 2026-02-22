@@ -1,0 +1,42 @@
+.titleBlock {
+  text-align: center;
+  padding-top: 48px;
+  padding-bottom: 20px;
+  background-color: var(--color-background);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.subtitle {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--color-secondary);
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-inline: var(--page-padding-x);
+}
+
+@media (max-width: 768px) {
+  .titleBlock {
+    padding-top: 40px;
+    padding-bottom: 16px;
+  }
+
+  .title {
+    font-size: clamp(32px, 10vw, 40px);
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+}

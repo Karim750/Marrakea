@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_pages",
+  "info": {
+    "singularName": "product-page",
+    "pluralName": "product-pages",
+    "displayName": "Product Page",
+    "description": "Product page linking artisan, gesture, and territory"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "medusa_product_id": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "description_html": {
+      "type": "richtext"
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "materials": {
+      "type": "json"
+    },
+    "acquisition": {
+      "type": "text"
+    },
+    "reference_sheet": {
+      "type": "json"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "featured_rank": {
+      "type": "integer"
+    },
+    "gesture": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::gesture.gesture"
+    },
+    "territory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::territory.territory"
+    },
+    "artisan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::artisan.artisan"
+    },
+    "cover_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    }
+  }
+}
