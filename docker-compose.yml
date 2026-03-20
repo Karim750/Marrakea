@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: marrakea
+      POSTGRES_PASSWORD: marrakea
+      POSTGRES_DB: marrakea
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  medusa:
+    build: ./medusa/my-medusa-store
+    ports:
+      - "9000:9000"
+    environment:
+      DATABASE_URL: postgres://marrakea:marrakea@postgres:5432/marrakea
+      REDIS_URL: redis://redis:6379
+
+  strapi:
+    build: marrakea-strapi
+    ports:
+      - "1337:1337"
+
+  bff:
+    build: ./bff
+    ports:
+      - "4000:4000"
+
+volumes:
+  pgdata:
