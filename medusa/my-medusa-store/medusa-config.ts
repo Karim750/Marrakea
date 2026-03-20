@@ -19,7 +19,7 @@ module.exports = defineConfig({
     }
   },
   modules: [
-    {
+  /*  {
       resolve: "@medusajs/medusa/payment",
       options: {
         providers: [
@@ -35,7 +35,7 @@ module.exports = defineConfig({
           },
         ],
       },
-    },
+    },*/
   ],
   admin: {
     vite: (config) => {

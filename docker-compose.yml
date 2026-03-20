@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
 
   postgres:
@@ -22,14 +20,36 @@ services:
     build: ./medusa/my-medusa-store
     ports:
       - "9000:9000"
+      - "5173:5173"
     environment:
       DATABASE_URL: postgres://marrakea:marrakea@postgres:5432/marrakea
       REDIS_URL: redis://redis:6379
+    volumes:
+      - ./medusa/my-medusa-store:/server
+      - /server/node_modules
+    depends_on:
+      - postgres
 
   strapi:
-    build: marrakea-strapi
+    image: marrakea-strapi:latest
     ports:
       - "1337:1337"
+    env_file: .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: marrakea
+      DATABASE_USERNAME: marrakea
+      DATABASE_PASSWORD: marrakea
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+    volumes:
+      - ./marrakea-strapi/public/uploads:/opt/app/public/uploads
+    depends_on:
+      - postgres
 
   bff:
     build: ./bff

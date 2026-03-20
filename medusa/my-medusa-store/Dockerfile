@@ -1,27 +1,32 @@
-FROM node:20-alpine
-
+# Stage 1 : builder
+FROM node:20-alpine AS builder
 WORKDIR /server
 
-# Install dependencies first (better layer caching)
-COPY package.json ./
-# Copy lockfile if present
-COPY yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-# Copy Yarn 4 config and releases (needed for modern Yarn)
-COPY .yarnrc.yml* ./
-COPY .yarn/ ./.yarn/
-
-# Install using the lockfile that exists (prefer yarn.lock, then pnpm-lock.yaml, then package-lock.json)
-RUN if [ -f yarn.lock ]; then corepack enable && yarn install --immutable; \
-    elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm install --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci; \
-    else npm install; fi
-
-# Copy source
+# Copier tout le code dès le début
 COPY . .
 
-# Ensure start script is executable
-RUN chmod +x ./start.sh
+# Installer les dépendances avec node_modules classique
+RUN corepack enable \
+    && corepack prepare yarn@stable --activate \
+    && yarn install
 
-EXPOSE 9000 5173
+# Builder le front Medusa
+RUN NODE_OPTIONS="--max_old_space_size=1536" yarn build
 
-CMD ["./start.sh"]
+# Stage 2 : image finale prod
+FROM node:20-alpine
+WORKDIR /server
+
+# Copier depuis le builder
+COPY --from=builder /server .
+
+# Installer uniquement les dépendances de prod
+RUN corepack enable \
+    && corepack prepare yarn@stable --activate \
+    && yarn install --production
+
+# Exposer le port prod
+EXPOSE 9000
+
+# Lancer Medusa en prod
+CMD ["yarn", "start"]
